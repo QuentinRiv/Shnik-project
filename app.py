@@ -6,9 +6,12 @@ import os
 import random
 import numpy as np
 from flask import jsonify
+from flask_cors import CORS
+
 
 # Initialisation
 app = Flask(__name__)
+CORS(app)
 # "///" = relative path ("//"" = absolute path)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///test_lexiq.db'     # Tell our app where the database is located
 # everything will be stored in the database test.db
@@ -73,7 +76,7 @@ def home():
 @app.route('/traitement/<int:id>', methods=['POST', 'GET'])
 def trait(id):
     if request.method == 'POST':    # If the request set for this route is set, do stuff there
-        liste_query = Lexiq.query.filter_by(id=id).first()
+        liste_query = Image.query.filter_by(id=id).first()
         try:
             valeur = request.form['valeur']
         except:
@@ -111,7 +114,7 @@ def arr2str(array):
 
 @app.route('/delete/<int:id>/<int:id2>')
 def delete(id, id2):
-    liste_query = Lexiq.query.filter_by(id=id).first()      # Get the correct element
+    liste_query = Image.query.filter_by(id=id).first()      # Get the correct element
     mots = str2arr(liste_query.names)
     score = str2arr(liste_query.count)
     del mots[id2]
@@ -128,7 +131,7 @@ def delete(id, id2):
 @app.route('/<int:id>', methods=['POST', 'GET'])
 def index2(id):
     if request.method == 'POST':    # If the request set for this route is set, do stuff there
-        liste_query = Lexiq.query.filter_by(id=id).first()
+        liste_query = Image.query.filter_by(id=id).first()
         try:
             valeur = request.form['valeur']
         except :
@@ -151,17 +154,12 @@ def index2(id):
 
     else:       # Partie affichage
         # look at all the database content in the order they were created, and return all of them
-        liste_query = Lexiq.query.filter_by(id=id).first()
+        liste_query = Image.query.filter_by(id=id).first()
 
         mots = str2arr(liste_query.names)
         score = str2arr(liste_query.count)
         return render_template('index2.html', liste=mots, user_image=liste_query.image_path, taille=len(mots), id=id, count=score)
 
-# @app.route('/test/<int:id>', methods=['POST', 'GET'])
-# def index3(id):
-#     sortie = {'msg' : id}
-#     name = request.json['name']
-#     return jsonify(sortie)
 
 @app.route('/machin', methods=['POST', 'GET'])
 def bidule():
@@ -183,7 +181,7 @@ def index2test(id):
     new = motss[ordre].tolist()
 
     return jsonify({'path' : path_im , 'words' : new})
-
+ 
 
 @app.route("/addDB", methods=["POST"])
 def create_entry():
@@ -207,13 +205,14 @@ def create_entry():
             return "appblème pour le commit"
 
     selected = req['selwords']
-    selElem = Variante.query.filter_by(names=selected[0]).first()
-    selElem.count += 1
-    try:
-        db.session.commit()
-        print("MAJ ok")
-    except:
-        return "appblème pour le commit"
+    if (selected != []): 
+        selElem = Variante.query.filter_by(names=selected[0]).first()
+        selElem.count += 1
+        try:
+            db.session.commit()
+            print("MAJ ok")
+        except:
+            return "appblème pour le commit"
 
     return res
 
