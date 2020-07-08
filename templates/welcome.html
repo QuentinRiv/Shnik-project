@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+<title>My incredible web site</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    crossorigin="anonymous">
+
+{% endblock %}
+
+{% block body %}
+<script>
+    let pos = {
+        lat: -45,
+        lon: 112
+    };
+</script>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#"><h1 class="display-4">Welcome Page</h1></a>
+</nav>
+
+<p>
+    longitude : <span id='lon'></span>
+</p>
+
+<script>
+    function superfun() {
+        let pos = {
+            lat: -45,
+            lon: 112
+        };
+
+        document.getElementById('lon').textContent = pos.lat;
+
+    }
+
+    superfun();
+</script>
+
+{% endblock %}

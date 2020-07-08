@@ -1,0 +1,49 @@
+{% extends "public_template.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block main %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Home</h1>
+    </div>
+  </div>
+</div>
+
+<p>
+  les valeurs : <span id="value"></span>
+</p>
+
+<div id="biduel"></div>
+<br>
+<h3 id="question"></h3>
+
+<fieldset>
+  <legend>Salut !</legend>
+<div id="container"></div>
+<input type="text" name="autre_valeur" id="autre_valeur" , placeholder="other name">
+<div>
+  <button class="btn btn-primary" id="submit" onclick="submit_message();">Submit message</button>
+</div>
+<div>
+  <button class="btn btn-primary" id="delete" onclick="delete_message();">Delete words</button>
+</div>
+</fieldset>
+
+
+<!-- TODO : mettre la fonction en dessous dans un autre fichier- -->
+
+
+<script>
+
+</script>
+
+<img id="imElem" src="" alt="User Image">
+
+{% endblock %}
+
+
+
+
