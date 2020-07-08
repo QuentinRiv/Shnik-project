@@ -11,7 +11,7 @@ from flask_cors import CORS
 
 # Initialisation
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 # "///" = relative path ("//"" = absolute path)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///test_lexiq.db'     # Tell our app where the database is located
 # everything will be stored in the database test.db
