@@ -181,7 +181,7 @@ def index2test(id):
     new = motss[ordre].tolist()
 
     return jsonify({'path' : path_im , 'words' : new})
- 
+
 
 @app.route("/addDB", methods=["POST"])
 def create_entry():
@@ -202,7 +202,7 @@ def create_entry():
             db.session.add(newVar)
             db.session.commit()
         except:
-            return "appblème pour le commit"
+            return "problème pour le commit"
 
     selected = req['selwords']
     if (selected != []): 
@@ -215,6 +215,22 @@ def create_entry():
             return "appblème pour le commit"
 
     return res
+
+@app.route("/display/<int:id>", methods=['GET'])
+def display(id):
+    print("Bienvenu !")
+
+    # look at all the database content in the order they were created, and return all of them
+    image_query = Image.query.filter_by(id=id).first()
+    vars = image_query.info
+    motss = np.array([vari.names for vari in vars])
+    counts = np.array([vari.count for vari in vars])
+    print('Compte : ', counts)
+    ordre = counts.argsort()[::-1]
+    path_im = image_query.image_path
+    new = motss[ordre].tolist()
+
+    return jsonify({'path': path_im, 'words': new, 'count': counts[ordre].tolist()})
 
 
 @app.route("/delete", methods=["POST"])
