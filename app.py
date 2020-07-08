@@ -205,14 +205,15 @@ def create_entry():
             return "problème pour le commit"
 
     selected = req['selwords']
-    if (selected != []): 
-        selElem = Variante.query.filter_by(names=selected[0]).first()
-        selElem.count += 1
-        try:
-            db.session.commit()
-            print("MAJ ok")
-        except:
-            return "appblème pour le commit"
+    if (selected != []):
+        for selection in selected:
+            selElem = Variante.query.filter_by(names=selection).first()
+            selElem.count += 1
+            try:
+                db.session.commit()
+                print("MAJ ok")
+            except:
+                return "appblème pour le commit"
 
     return res
 
