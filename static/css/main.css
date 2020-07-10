@@ -1,0 +1,94 @@
+
+
+
+/* Basic rules */
+
+body, html {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+.content {
+    margin: 0 auto;
+    width: 400px; /*taille du tableau*/
+}
+
+/* table, td, th {
+    border: 1px solid #aaa;
+} */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    /* align-content: center; */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+th {
+    height: 30px; /* Controle la hauteure*/
+}
+
+tr {
+    text-align: center;
+    align-content: center;
+    align-self: center;
+}
+
+td {
+    text-align: center;
+    padding: 5px;
+}
+
+.form {
+    margin-top: 20px;
+}
+
+#content {
+    width: 70%;
+}
+
+h1 {
+    text-align: center;
+}
+
+/* p, form {
+    text-align: center;
+} */
+
+.btn {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+fieldset.content {
+    align-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.align-center {
+    display: block;
+    margin: 1.0em auto;
+    text-align: center;
+}
+
+fieldset {
+    align-content: center;
+    text-align: center;
+    width: 150px;
+    margin: 0px auto;
+    border-radius:8px;
+    /* -webkit-border-radius:8px;
+    -moz-border-radius:8px; */
+    border:2px solid rgb(28, 6, 126);
+}

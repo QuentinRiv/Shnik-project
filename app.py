@@ -219,19 +219,15 @@ def create_entry():
 
 @app.route("/display/<int:id>", methods=['GET'])
 def display(id):
-    print("Bienvenu !")
 
     # look at all the database content in the order they were created, and return all of them
     image_query = Image.query.filter_by(id=id).first()
     vars = image_query.info
-    motss = np.array([vari.names for vari in vars])
-    counts = np.array([vari.count for vari in vars])
-    print('Compte : ', counts)
-    ordre = counts.argsort()[::-1]
+    mots = np.array([vari.names for vari in vars]).tolist()
+    counts = np.array([vari.count for vari in vars]).tolist()
     path_im = image_query.image_path
-    new = motss[ordre].tolist()
 
-    return jsonify({'path': path_im, 'words': new, 'count': counts[ordre].tolist()})
+    return jsonify({'path': path_im, 'words': mots, 'count': counts})
 
 
 @app.route("/delete", methods=["POST"])
@@ -245,15 +241,15 @@ def delete_entry():
 
     id = req['id']
     w2del = req['selwords'][0]
-    # image_query = Image.query.filter_by(id=id).first()
 
-    elem2del = Variante.query.filter_by(names=w2del).first()
+    for w2del in req['selwords']:
+        elem2del = Variante.query.filter_by(names=w2del).first()
 
-    try:
-        db.session.delete(elem2del)
-        db.session.commit()
-    except:
-        return "appblème pour la suppression"
+        try:
+            db.session.delete(elem2del)
+            db.session.commit()
+        except:
+            return "appblème pour la suppression"
 
     return res
 
