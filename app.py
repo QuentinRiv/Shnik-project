@@ -210,7 +210,6 @@ def delete_entry():
 
     # Get the info for adding the new word(s)
     name = req['name']
-    w2del = req['newwords']
     image_query = Image.query.filter_by(name=name).first()
 
     for w2del in req['selwords']:
