@@ -161,9 +161,9 @@ def create_entry():
     print(req)
 
     # Get the info for adding the new word(s)
-    name = req['name']
+    path_im = req['path']
     new_words = req['newwords']
-    image_query = Image.query.filter_by(name=name[0]).first()
+    image_query = Image.query.filter_by(image_path=path_im).first()
 
     if (new_words != ""):
         newVar = Variante(name=new_words, count='1', lName=image_query)
