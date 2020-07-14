@@ -208,9 +208,10 @@ def delete_entry():
 
     print(req)  # Just print what we received
 
-    # Get info for the deleting
-    id = req['id']
-    w2del = req['selwords']      # Word(s) to delete
+    # Get the info for adding the new word(s)
+    name = req['name']
+    w2del = req['newwords']
+    image_query = Image.query.filter_by(name=name).first()
 
     for w2del in req['selwords']:
         elem2del = Variante.query.filter_by(name=w2del).first()
