@@ -186,11 +186,11 @@ def create_entry():
 
     return make_response(jsonify({"message": "OK : word(s) added"}), 200)
 
-@app.route("/display/<int:id>", methods=['GET'])
-def display(id):
+@app.route("/display/<string:name>", methods=['GET'])
+def display(name):
 
     # look at all the database content in the order they were created, and return all of them
-    image_query = Image.query.filter_by(id=id).first()                  # Get the corresponding image
+    image_query = Image.query.filter_by(name=name).first()                  # Get the corresponding image
     vars = image_query.info                                             # Get the variantes of the images
     words = np.array([vari.name for vari in vars]).tolist()            # Put the words into an array (np is used to sort)
     scores = np.array([vari.count for vari in vars]).tolist()           # Get the scores
