@@ -204,7 +204,7 @@ def display(name):
 def delete_entry():
 
     # Get the JSON data
-    req = request.get_json()
+    req = request.get_json(force=True)
 
     print(req)  # Just print what we received
 
