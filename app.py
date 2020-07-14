@@ -31,7 +31,7 @@ db = SQLAlchemy(app)
 
 # class Variante(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)    # Clé primaire
-#     names = db.Column(db.String(1000), default="")
+#     name = db.Column(db.String(1000), default="")
 #     count = db.Column(db.Integer, default=0)
 #     im_id = db.Column(db.Integer, db.ForeignKey('image.id'))
 
@@ -76,7 +76,7 @@ biglist = [liste1, liste2, liste3, liste4, liste5]
 #         newIm = Image(image_path=full_filename)
 #         db.session.add(newIm)
 #         for j, mots in enumerate(liste[1]):
-#             newVar = Variante(names=mots, lName=newIm)
+#             newVar = Variante(name=mots, lName=newIm)
 #             try:
 #                 db.session.add(newVar)    # Rajoute la tâche
 #                 db.session.commit()
@@ -138,7 +138,7 @@ def bidule():
 def index(id):
     image_query = Image.query.filter_by(id=id).first()                  # Get the corresponding image
     vars = image_query.info                                             # Get the variantes of the images
-    words = np.array([vari.names for vari in vars])                     # Put the words into an array (np is used to sort)
+    words = np.array([vari.name for vari in vars])                     # Put the words into an array (np is used to sort)
     scores = np.array([vari.count for vari in vars])                    # Get the scores
     path_im = image_query.image_path                                    # Path of the image
 
@@ -166,7 +166,7 @@ def create_entry():
     image_query = Image.query.filter_by(id=id).first()
 
     if (new_words != ""):
-        newVar = Variante(names=new_words, count='1', lName=image_query)
+        newVar = Variante(name=new_words, count='1', lName=image_query)
         try:
             db.session.add(newVar)
             db.session.commit()
@@ -176,7 +176,7 @@ def create_entry():
     selected = req['selwords']
     if (selected != []):
         for selection in selected:
-            selElem = Variante.query.filter_by(names=selection).first()
+            selElem = Variante.query.filter_by(name=selection).first()
             selElem.count += 1
             try:
                 db.session.commit()
@@ -192,7 +192,7 @@ def display(id):
     # look at all the database content in the order they were created, and return all of them
     image_query = Image.query.filter_by(id=id).first()                  # Get the corresponding image
     vars = image_query.info                                             # Get the variantes of the images
-    words = np.array([vari.names for vari in vars]).tolist()            # Put the words into an array (np is used to sort)
+    words = np.array([vari.name for vari in vars]).tolist()            # Put the words into an array (np is used to sort)
     scores = np.array([vari.count for vari in vars]).tolist()           # Get the scores
     path_im = image_query.image_path                                    # Path of the image
 
@@ -212,7 +212,7 @@ def delete_entry():
     w2del = req['selwords']      # Word(s) to delete
 
     for w2del in req['selwords']:
-        elem2del = Variante.query.filter_by(names=w2del).first()
+        elem2del = Variante.query.filter_by(name=w2del).first()
 
         try:
             db.session.delete(elem2del)
