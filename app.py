@@ -134,9 +134,9 @@ def bidule():
     if request.method == 'GET':
         return render_template('indexx.html')
 
-@app.route('/test/<int:id>', methods=['POST', 'GET'])
-def index(id):
-    image_query = Image.query.filter_by(id=id).first()                  # Get the corresponding image
+@app.route('/test/<string:name>', methods=['POST', 'GET'])
+def index(name):
+    image_query = Image.query.filter_by(name=name).first()                  # Get the corresponding image
     vars = image_query.info                                             # Get the variantes of the images
     words = np.array([vari.name for vari in vars])                     # Put the words into an array (np is used to sort)
     scores = np.array([vari.count for vari in vars])                    # Get the scores
@@ -188,7 +188,7 @@ def create_entry():
 
 @app.route("/display/<string:name>", methods=['GET'])
 def display(name):
-
+    print("name")
     # look at all the database content in the order they were created, and return all of them
     image_query = Image.query.filter_by(name=name).first()                  # Get the corresponding image
     vars = image_query.info                                             # Get the variantes of the images
