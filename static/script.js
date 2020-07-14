@@ -24,7 +24,6 @@ var allWords = [];
 
 async function getUserAsync(path) {
     let response = await fetch(path, {
-        // fetch(`https://retry-unige.herokuapp.com/addDB`, {
         method: "GET",
         credentials: "include",
         cache: "no-cache",
@@ -55,8 +54,8 @@ async function prepareWords(path) {
     $('#imElem').attr("src", fin["path"]);          // Source de l'image a affiché
     flaggedWords = [];
 
-    $('#ima').attr("src", fin["path"]);
-    $('#a_ima').attr("href", fin["path"]);
+    // $('#ima').attr("src", fin["path"]);
+    // $('#a_ima').attr("href", fin["path"]);
 
     return fin
 }
@@ -91,7 +90,7 @@ async function submit_message() {
     var textfield = document.getElementById("autre_valeur");
 
     var entry = {
-        id: id,
+        name: window.location.pathname,
         selwords: selectedWords,
         flagwords: flaggedWords,
         newwords : textfield.value
@@ -167,61 +166,61 @@ async function delete_message() {
 }
 
 
-$(function () {
-    $('.demo_fluid a').fluidbox();
-});
+// $(function () {
+//     $('.demo_fluid a').fluidbox();
+// });
 
 
-var randomScalingFactor = function () {
-    return Math.round(Math.random() * 100);
-};
+// var randomScalingFactor = function () {
+//     return Math.round(Math.random() * 100);
+// };
 
-var config = {
-    type: 'doughnut',
-    data: {
-        datasets: [{
-            data: [1, 2, 3, 4, 5],
-            backgroundColor: [
-                "red",
-                "orange",
-                "yellow",
-                "green",
-                "blue",
-            ],
-            label: 'Dataset 1'
-        }],
-        labels: [
-            'Red',
-            'Orange',
-            'Yellow',
-            'Green',
-            'Blue'
-        ]
-    },
-    options: {
-        responsive: true,
-        legend: {
-            position: 'top',
-        },
-        title: {
-            display: true,
-            text: 'Donut'
-        },
-        animation: {
-            animateScale: true,
-            animateRotate: true
-        }
-    }
-};
+// var config = {
+//     type: 'doughnut',
+//     data: {
+//         datasets: [{
+//             data: [1, 2, 3, 4, 5],
+//             backgroundColor: [
+//                 "red",
+//                 "orange",
+//                 "yellow",
+//                 "green",
+//                 "blue",
+//             ],
+//             label: 'Dataset 1'
+//         }],
+//         labels: [
+//             'Red',
+//             'Orange',
+//             'Yellow',
+//             'Green',
+//             'Blue'
+//         ]
+//     },
+//     options: {
+//         responsive: true,
+//         legend: {
+//             position: 'top',
+//         },
+//         title: {
+//             display: true,
+//             text: 'Donut'
+//         },
+//         animation: {
+//             animateScale: true,
+//             animateRotate: true
+//         }
+//     }
+// };
 
-window.onload = async function () {
-    var ctx = document.getElementById('chart-area').getContext('2d');
-    var data = await getUserAsync(path_display)
-    var couleur = ['blue', 'green', 'red', 'grey', 'purple', 'brown', 'cyan', 'yellow']
-    var sizeWords = data['words'].length;
+// window.onload = async function () {
+//     var ctx = document.getElementById('chart-area').getContext('2d');
+//     var data = await getUserAsync(path_display)
+//     var couleur = ['blue', 'green', 'red', 'grey', 'purple', 'brown', 'cyan', 'yellow']
+//     var sizeWords = data['words'].length;
 
-    config['data']['datasets'][0]['data'] = data['count'];
-    config['data']['datasets'][0]['backgroundColor'] = couleur.slice(0, sizeWords);
-    config['data']['labels'] = data['words'];
-    window.myDoughnut = new Chart(ctx, config);
-};
+//     config['data']['datasets'][0]['data'] = data['count'];
+//     config['data']['datasets'][0]['backgroundColor'] = couleur.slice(0, sizeWords);
+//     config['data']['labels'] = data['words'];
+//     window.myDoughnut = new Chart(ctx, config);
+// };
