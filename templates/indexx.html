@@ -18,7 +18,7 @@
 
 
 <fieldset class="table">
-  <legend>Salut !</legend>
+  <legend>...</legend>
 <div id="container"></div>
 <input type="text" name="autre_valeur" id="autre_valeur" , placeholder="other name">
 <div>
@@ -31,17 +31,19 @@
 
 <br>
 
-<img id="imElem" src="" alt="User Image">
+<!-- <img id="imElem" class="imElem" alt="User Image"> -->
 
-<table>
-    <tr>
-      <td>The table header</td>
-    </tr>
-    <tr>
-      <td>The table body</td>
-      <td>with two columns</td>
-    </tr>
-</table>
+<div class=demo_fluid>
+  <a id="a_ima" href="/static/people_photo/chat.jpg" data-fluidbox class="col-1">
+    <img id="ima" src="/static/people_photo/chat.jpg" alt /></a>
+    <div class="fluidbox__ghost" style="width: 100; height: 100; top: 100; left: 100;"></div>
+</div>
+
+
+<div id="canvas-holder" style="width:40%">
+  <canvas id="chart-area"></canvas>
+</div>
+
 
 {% endblock %}
 

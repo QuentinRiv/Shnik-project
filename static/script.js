@@ -1,8 +1,26 @@
 
 
+id = '2'
+
+var path = "";
+var fetch_path = "";
+// id = Math.floor(Math.random() * 5).toString();
+var path_display = "";
+
+
+local = true
+if (local) {
+    path = `test/` + id;
+    path_display = 'display/' + id;
+    fetch_path = `${window.origin}` + '/';
+}
+else {
+    path = `https://retry-unige.herokuapp.com/test/` + id;
+    path_display = `https://retry-unige.herokuapp.com/display/` + id;
+    fetch_path = `https://retry-unige.herokuapp.com/`;
+}
+
 var allWords = [];
-
-
 
 async function getUserAsync(path) {
     let response = await fetch(path, {
@@ -20,6 +38,7 @@ async function getUserAsync(path) {
     return data;
 }
 
+
 async function prepareWords(path) {
     var fin = await getUserAsync(path);
     var allWords = fin['words'];
@@ -35,13 +54,17 @@ async function prepareWords(path) {
     $('#container').append(`</table>`)
     $('#imElem').attr("src", fin["path"]);          // Source de l'image a affiché
     flaggedWords = [];
+
+    $('#ima').attr("src", fin["path"]);
+    $('#a_ima').attr("href", fin["path"]);
+
     return fin
 }
 
 
-id = `2`
-path = `https://retry-unige.herokuapp.com/test/` + id;
-// path = `test/` + id;
+
+
+
 
 prepareWords(path);
 
@@ -75,8 +98,7 @@ async function submit_message() {
     };
 
 
-    // fetch(`${window.origin}/addDB`, {
-    fetch(`https://retry-unige.herokuapp.com/addDB`, {
+    fetch(fetch_path + 'addDB', {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(entry),
@@ -119,8 +141,7 @@ async function delete_message() {
         selwords: selectedWords,
     };
 
-    // fetch(`${window.origin}/delete`, {
-    fetch(`https://retry-unige.herokuapp.com/delete`, {
+    fetch(fetch_path + 'delete', {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(entry),
@@ -146,6 +167,61 @@ async function delete_message() {
 }
 
 
+$(function () {
+    $('.demo_fluid a').fluidbox();
+});
 
 
+var randomScalingFactor = function () {
+    return Math.round(Math.random() * 100);
+};
 
+var config = {
+    type: 'doughnut',
+    data: {
+        datasets: [{
+            data: [1, 2, 3, 4, 5],
+            backgroundColor: [
+                "red",
+                "orange",
+                "yellow",
+                "green",
+                "blue",
+            ],
+            label: 'Dataset 1'
+        }],
+        labels: [
+            'Red',
+            'Orange',
+            'Yellow',
+            'Green',
+            'Blue'
+        ]
+    },
+    options: {
+        responsive: true,
+        legend: {
+            position: 'top',
+        },
+        title: {
+            display: true,
+            text: 'Donut'
+        },
+        animation: {
+            animateScale: true,
+            animateRotate: true
+        }
+    }
+};
+
+window.onload = async function () {
+    var ctx = document.getElementById('chart-area').getContext('2d');
+    var data = await getUserAsync(path_display)
+    var couleur = ['blue', 'green', 'red', 'grey', 'purple', 'brown', 'cyan', 'yellow']
+    var sizeWords = data['words'].length;
+
+    config['data']['datasets'][0]['data'] = data['count'];
+    config['data']['datasets'][0]['backgroundColor'] = couleur.slice(0, sizeWords);
+    config['data']['labels'] = data['words'];
+    window.myDoughnut = new Chart(ctx, config);
+};
