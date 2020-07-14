@@ -156,8 +156,9 @@ def index(name):
 def create_entry():
 
     # Get the JSON data
-    req = request.get_json()
+    req = request.get_json(force=True)
 
+    print("Req = ")
     print(req)
 
     # Get the info for adding the new word(s)
