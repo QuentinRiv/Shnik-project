@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Import our custom stylesheet -->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/mainStat.css') }}"> -->
+
+
+
+
+    <title>Stats</title>
+</head>
+
+<body>
+
+    <main>
+        <h1>Bonjour !</h1>
+
+        <table id=tab></table>
+    </main>
+
+    <!-- Import jquery 3.3.1 slim min -->
+    <!-- <script src="{{ url_for('static', filename='js/jquery.slim.min.js') }}"></script> -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+
+    <!-- Import Bootstrap bundle -->
+    <script>
+        async function getData(path) {
+                let response = await fetch(path, {
+                    method: "GET",
+                    credentials: "include",
+                    cache: "no-cache",
+                    headers: new Headers({
+                        "content-type": "application/json",
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': true
+                    })
+                })
+                let data = await response.json();
+                return data;
+            }
+
+
+        async function prepareWords(path) {
+            var data = await getData(path);
+            var allNames = data['names'];
+            var full_tab = ``;
+            for (var name of allNames) {
+                full_tab += `<tr>`;
+                full_tab += `<td>${name}</td>`;
+                var taille = data[name]['variance'].length;
+                for (var num of Array(taille).keys()) {
+                    full_tab += `<td>${data[name]['variance'][num]} (${data[name]['scores'][num]})</td>`;
+                }
+
+                // full_tab += `<td><button class="flag" value="${value}"><i class="fa fa-flag"></i></button></td>`;
+                full_tab += `</tr>`;
+            }
+            // $('#container').append(`</table>`)
+            $('#tab').append(full_tab);
+
+            flaggedWords = [];
+
+        }
+
+        path = `/alldata`;
+        prepareWords(path);
+
+    </script>
+</body>
+
+</html>

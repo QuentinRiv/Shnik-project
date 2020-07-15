@@ -1,6 +1,6 @@
 
 
-id = '2'
+id = 'gabel'
 
 var path = "";
 var fetch_path = "";
@@ -43,16 +43,23 @@ async function getUserAsync(path) {
 async function prepareWords(path) {
     var fin = await getUserAsync(path);
     var allWords = fin['words'];
-    $('#container').append(`<table>`)
+    // $('#container').append(`<table class="tab" align="center">`)
+    var full_tab = ``;
     for (var value of allWords) {
-        $('#container').append(`<tr>`)
-        $('#container').append(`<td><input type="checkbox" id="${value}" name="interest" value="${value}"></td>`)    // Rajoute checkbox
-        $('#container').append(`<td><label for="${value}">${value}</label></td>`)                              // Associe le nom
-        $('#container').append(`<td><button class="flag" value="${value}"><i class="fa fa-flag"></i></button></td>`) // Met le bouton principal
-        // $('#container').append(`<br>`);
-        $('#container').append(`</tr>`)
+        // $('#tab').append(`<tr>`)
+        // $('#tab').append(`<td><input type="checkbox" id="${value}" name="interest" value="${value}"></td>`)    // Rajoute checkbox
+        // $('#tab').append(`<td><label for="${value}">${value}</label></td>`)                              // Associe le nom
+        // $('#container').append(`<td><button class="flag" value="${value}"><i class="fa fa-flag"></i></button></td>`) // Met le bouton principal
+        // $('#container').append(`</tr>`)
+        full_tab += `<tr>`;
+        full_tab += `<td><input type="checkbox" id="${value}" name="interest" value="${value}"></td>`;
+        full_tab += `<td><label for="${value}">${value}</label></td>`;
+        full_tab += `<td><button class="flag" value="${value}"><i class="fa fa-flag"></i></button></td>`;
+        full_tab += `</tr>`;
     }
-    $('#container').append(`</table>`)
+    // $('#container').append(`</table>`)
+    $('#tab').append(full_tab);
+
     $('#imElem').attr("src", fin["path"]);          // Source de l'image a affiché
     flaggedWords = [];
     console.debug(fin["path"]);
@@ -65,7 +72,7 @@ async function prepareWords(path) {
 
 
 
-// prepareWords(path);
+prepareWords(path);
 
 
 

@@ -224,5 +224,35 @@ def delete_entry():
     # Response we hope to return
     return make_response(jsonify({"message": "OK : Word(s) deleted"}), 200)
 
+
+@app.route('/stats')
+def stats():
+    return render_template('stats.html')
+
+@app.route('/alldata')
+def data():
+    # Get the corresponding image
+    dico = {}
+    all_ims = Image.query.all()
+    dico['names'] = []
+    for image in all_ims:
+        vars = image.info
+        names = np.array([var.name for var in vars])
+        scores = np.array([var.count for var in vars])
+        flags = np.array([var.flag for var in vars])
+        order = scores.argsort()
+        names_ordered = names[order].tolist()
+        scores_ordered = np.sort(scores).tolist()
+        flags_ordered = flags[order].tolist()
+        dico[image.name] = {'variance': names_ordered,
+                            'scores': scores_ordered,
+                            'flag': flags_ordered}
+        dico['names'] += [image.name]
+    # vars = image_query.info
+    # words = np.array([vari.name for vari in vars]).tolist()
+    # scores = np.array([vari.count for vari in vars]).tolist()
+    # path_im = image_query.image_path
+    return jsonify(dico)
+
 if __name__ == "__main__":
     app.run(debug=True)
