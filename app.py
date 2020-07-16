@@ -114,7 +114,12 @@ def get_my_ip():
 @app.route('/', methods=['POST', 'GET'])
 def home():
     # fillDB(path)
-    return render_template('welcome.html')
+    ip_address = request.remote_addr
+    accept_ip = ["10.39.236.138", "127.0.0.1", "176.153.30.138"]
+    if (ip_address in accept_ip):
+        return render_template('welcome.html')
+    else:
+        return "Not accepted, Mr. " + ip_address 
 
 
 def str2arr(string):
@@ -179,6 +184,17 @@ def create_entry():
         for selection in selected:
             selElem = Variante.query.filter_by(name=selection).first()
             selElem.count += 1
+            try:
+                db.session.commit()
+                print("MAJ ok")
+            except:
+                return "Problème pour le commit"
+
+    flagge = req['flagwords']
+    if (flagge != []):
+        for flag_word in flagge:
+            selElem = Variante.query.filter_by(name=flag_word).first()
+            selElem.flag += 1
             try:
                 db.session.commit()
                 print("MAJ ok")

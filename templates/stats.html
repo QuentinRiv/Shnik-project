@@ -18,7 +18,7 @@
 <body>
 
     <main>
-        <h1>Bonjour !</h1>
+        <h1>Statistic</h1>
 
         <table id=tab></table>
     </main>
@@ -27,6 +27,7 @@
     <!-- <script src="{{ url_for('static', filename='js/jquery.slim.min.js') }}"></script> -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
 
     <!-- Import Bootstrap bundle -->
@@ -51,15 +52,38 @@
             var data = await getData(path);
             var allNames = data['names'];
             var full_tab = ``;
+
+            full_tab += `<tr>`;
+            full_tab += `<td colspan="1"><b>Image</b></td>`
+            full_tab += `<td colspan="1"><b>Name image</b></td>`
+            full_tab += `<td colspan="10"><b>Variances</b></td>`
+            full_tab += `</tr>`;
             for (var name of allNames) {
                 full_tab += `<tr>`;
+                var path_i = "/static/dictionary/" + name +".jpg";
+                full_tab += `<td style="width: 150px;"><img id="${name}" class="${name}" src=${path_i} alt /></td>`;
+                // full_tab += `<td><img id="ima" class="wo_ima" src="/static/people_photo/chat.jpg" alt /></td>`;
+                
                 full_tab += `<td>${name}</td>`;
                 var taille = data[name]['variance'].length;
                 for (var num of Array(taille).keys()) {
-                    full_tab += `<td>${data[name]['variance'][num]} (${data[name]['scores'][num]})</td>`;
+                    full_tab += `<td>`;
+                    full_tab += `<p class="alignleft">(${data[name]['scores'][num]})`
+                    if (data[name]['flag'][num] > 0) {
+                        full_tab += `<span class="flagg"> / (${data[name]['flag'][num]}) </span>`;
+                    }
+                    full_tab += `</p>`;
+                    full_tab += `<p class="aligncenter">`
+                    full_tab += `${data[name]['variance'][num]}  `;
+                    if (data[name]['flag'][num] > 0) {
+                        full_tab += `<p class="alignright"><button class="delete" value="${data[name]['variance'][num]}"><i class="fa fa-trash"></button></p>`
+                    }
+                    full_tab += `</p>`;
+                    // full_tab += `salut</p>`
+                    full_tab += `</td>`;
                 }
+                // full_tab += `<td><p class="alignleft">gauche</p><p class="aligncenter">center</p><p class="aligndroite">droite</p></td>`
 
-                // full_tab += `<td><button class="flag" value="${value}"><i class="fa fa-flag"></i></button></td>`;
                 full_tab += `</tr>`;
             }
             // $('#container').append(`</table>`)
@@ -73,6 +97,49 @@
         prepareWords(path);
 
     </script>
+
+    <style>
+        table, td, th {
+            border: 1px solid #aaa;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th {
+            height: 30px;
+        }
+
+        td {
+            text-align: center;
+            padding: 5px;
+        }
+
+        span.flagg {
+            color: #f00;
+        }
+
+        .alignleft {
+            float: left;
+            text-align:left;
+            width:33.33333%;
+        }
+        .aligncenter {
+            float: left;
+            text-align:center;
+            width:33.33333%;
+        }
+        .alignright {
+            float: left;
+            text-align:right;
+            width:33.33333%;
+        }
+        img{
+            width: 100px;
+        }
+    </style>
 </body>
 
 </html>
