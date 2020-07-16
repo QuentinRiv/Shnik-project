@@ -126,7 +126,7 @@ def get_my_ip():
     routes = request.access_route
 
     if request.headers.getlist("X-Forwarded-For"):
-       ip_forward = request.headers.getlist("X-Forwarded-For")[0]
+       ip_forward = request.headers.getlist("X-Forwarded-For")
     else:
         ip_forward = request.remote_addr
 
