@@ -121,12 +121,14 @@ def get_my_ip():
         ip_list = proxy_data.split(',')
         # user_ip = ip_list[0]  # first address in list is User IP
     else:
-        ip_list = request.remote_addr  # For local development
+        ip_list = 'rien du tout'  # For local development
 
     routes = request.access_route
 
     
-    ip_forward_list = request.headers
+    ip_forward_list = 'je sais pas'
+    print('\n')
+    print(type(ip_forward_list))
 
     return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
                     'http_addr': http_addr, 'ip_list': ip_list,
