@@ -11,7 +11,7 @@ from flask_cors import CORS
 
 # Initialisation
 app = Flask(__name__)
-CORS(app, supports_credentials=True, )
+CORS(app, supports_credentials=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app where the database is located
 
 PEOPLE_FOLDER = os.path.join('static', 'people_photo')
@@ -62,6 +62,26 @@ class Variante(db.Model):
         return '<Var %r>' % self.id
 
 
+liste1 = ["chat.jpg", ["chat","cat","gatto"], ["0","0","0"]]
+liste2 = ["chien.jpg", ["chien","dog","cane"], ["0","0","0"]]
+liste3 = ["loup.jpg", ["loup","wolf","luppo"], ["0","0","0"]]
+liste4 = ["poisson.jpg", ["poisson","fish","pesce"], ["0","0","0"]]
+liste5 = ["lapin.jpg", ["lapin","bunny","caniglio"], ["0", "0", "0"]]
+
+biglist = [liste1, liste2, liste3, liste4, liste5]
+
+# def fillDB():
+#     for liste in biglist:
+#         full_filename = os.path.join(app.config['UPLOAD_FOLDER'], liste[0])
+#         newIm = Image(image_path=full_filename)
+#         db.session.add(newIm)
+#         for j, mots in enumerate(liste[1]):
+#             newVar = Variante(name=mots, lName=newIm)
+#             try:
+#                 db.session.add(newVar)    # Rajoute la tâche
+#                 db.session.commit()
+#             except:
+#                 return "appblème pour le commit"
 
 
 path = "C:\\Users\\quent\\Desktop\\Projet\\words_albanian.txt"
@@ -95,30 +115,30 @@ def get_my_ip():
         http_addr = request.environ['REMOTE_ADDR']
     else:
         http_addr = request.environ['HTTP_X_FORWARDED_FOR']
-
+    
     if 'X-Forwarded-For' in request.headers:
         proxy_data = request.headers['X-Forwarded-For']
         ip_list = proxy_data.split(',')
         # user_ip = ip_list[0]  # first address in list is User IP
     else:
-        ip_list = 'rien du tout'  # For local development
+        ip_list = request.remote_addr  # For local development
 
     routes = request.access_route
 
-    
-    ip_forward_list = 'je sais pas'
-    print('\n')
-    print(type(ip_forward_list))
-
-    if 'HTTP_X_FORWARDED_FOR' in request.META:
-        ip_addss = request.META['HTTP_X_FORWARDED_FOR'].split(",")
+    if request.headers.getlist("X-Forwarded-For"):
+       ip_forward_list = request.headers.getlist("X-Forwarded-For")
     else:
-        ip_addss = request.META['REMOTE_ADDR']
+        ip_forward_list = 'rien du tout'
+    
+    if request.headers.get("X-Forwarded-For"):
+        ip_forward = request.headers.get("X-Forwarded-For")
+    else:
+        ip_forward = 'rien du tout'
 
     return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
                     'http_addr': http_addr, 'ip_list': ip_list,
-                    'routes': routes, 'ip_addss': ip_addss,
-                    }), 200
+                    'routes': routes, 'ip_forward_list': ip_forward_list,
+                    'ip_forward': ip_forward}), 200
  
 
 @app.route('/', methods=['POST', 'GET'])
@@ -133,8 +153,6 @@ def home():
         http_addr = request.environ['REMOTE_ADDR']
     else:
         http_addr = request.environ['HTTP_X_FORWARDED_FOR']
-
-
 
     # if (ip_address in accept_ip):
     #     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
@@ -289,6 +307,9 @@ def data():
     # scores = np.array([vari.count for vari in vars]).tolist()
     # path_im = image_query.image_path
     return jsonify(dico)
+
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=5, x_host=5)
 
 if __name__ == "__main__":
     app.run(debug=True)
