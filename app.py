@@ -123,7 +123,7 @@ def home():
     #     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
     # else:
     #     return "Not accepted, Mr. " + request.environ['REMOTE_ADDR']
-    render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
+    return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
 
 def str2arr(string):
     return (string).split(',')
