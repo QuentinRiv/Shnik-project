@@ -108,7 +108,7 @@ def fillDB(path):
 
 @app.route("/get_my_ip", methods=["GET"])
 def get_my_ip():
-    return jsonify({'ip': request.remote_addr}), 200
+    return jsonify({'ip': request.request.environ['HTTP_X_FORWARDED_FOR']}), 200
 
 
 @app.route('/', methods=['POST', 'GET'])
