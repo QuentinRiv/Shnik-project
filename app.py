@@ -125,20 +125,13 @@ def get_my_ip():
 
     routes = request.access_route
 
-    if request.environ.getlist("HTTP_X_FORWARDED_FOR"):
-       ip_forward_list = request.environ.getlist("HTTP_X_FORWARDED_FOR")
-    else:
-        ip_forward_list = 'rien du tout'
-
-    if request.environ.get("HTTP_X_FORWARDED_FOR"):
-        ip_forward = request.environ.get("HTTP_X_FORWARDED_FOR")
-    else:
-        ip_forward = 'rien du tout'
+    
+    ip_forward_list = request.headers
 
     return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
                     'http_addr': http_addr, 'ip_list': ip_list,
                     'routes': routes, 'ip_forward_list': ip_forward_list,
-                    'ip_forward': ip_forward}), 200
+                    }), 200
  
 
 @app.route('/', methods=['POST', 'GET'])
