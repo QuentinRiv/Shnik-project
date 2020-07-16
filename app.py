@@ -108,7 +108,7 @@ def fillDB(path):
 
 @app.route("/get_my_ip", methods=["GET"])
 def get_my_ip():
-    return jsonify({'ip': request.request.environ['HTTP_X_FORWARDED_FOR']}), 200
+    return jsonify({'ip': request.remote_addr}), 200
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -118,14 +118,16 @@ def home():
     ip_add = request.remote_addr
     accept_ip = ["10.39.236.138", "127.0.0.1",
                  "176.153.30.138", "10.39.211.254"]
-
-    http_addr = request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
+    
+    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+        http_addr = request.environ['REMOTE_ADDR']
+    else:
+        http_addr = request.environ['HTTP_X_FORWARDED_FOR']
 
     # if (ip_address in accept_ip):
     #     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
     # else:
     #     return "Not accepted, Mr. " + request.environ['REMOTE_ADDR']
-    http_addr = request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add, http_addr=http_addr)
 
 def str2arr(string):
