@@ -120,7 +120,7 @@ def home():
     if (ip_address in accept_ip):
         return render_template('welcome.html')
     else:
-        return "Not accepted, Mr. " + ip_address
+        return "Not accepted, Mr. " + request.environ['REMOTE_ADDR']
 
 
 def str2arr(string):
