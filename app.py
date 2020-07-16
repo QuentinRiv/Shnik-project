@@ -115,11 +115,12 @@ def get_my_ip():
 def home():
     # fillDB(path)
     ip_address = request.remote_addr
-    accept_ip = ["10.39.236.138", "127.0.0.1", "176.153.30.138"]
+    accept_ip = ["10.39.236.138", "127.0.0.1",
+                 "176.153.30.138", "10.39.211.254"]
     if (ip_address in accept_ip):
         return render_template('welcome.html')
     else:
-        return "Not accepted, Mr. " + ip_address 
+        return "Not accepted, Mr. " + ip_address
 
 
 def str2arr(string):
