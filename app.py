@@ -133,7 +133,7 @@ def get_my_ip():
     return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
                     'http_addr': http_addr, 'ip_list': ip_list,
                     'routes': routes, 'ip_forward': ip_forward}), 200
-
+ 
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
