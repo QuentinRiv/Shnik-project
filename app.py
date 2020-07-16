@@ -119,11 +119,14 @@ def home():
     accept_ip = ["10.39.236.138", "127.0.0.1",
                  "176.153.30.138", "10.39.211.254"]
 
+    http_addr = request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
+
     # if (ip_address in accept_ip):
     #     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
     # else:
     #     return "Not accepted, Mr. " + request.environ['REMOTE_ADDR']
-    return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
+    http_addr = request.environ['HTTP_X_FORWARDED_FOR'] # if behind a proxy
+    return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add, http_addr=http_addr)
 
 def str2arr(string):
     return (string).split(',')
