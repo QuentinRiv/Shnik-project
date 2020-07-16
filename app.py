@@ -125,13 +125,13 @@ def get_my_ip():
 
     routes = request.access_route
 
-    if request.headers.getlist("X-Forwarded-For"):
-       ip_forward_list = request.headers.getlist("X-Forwarded-For")
+    if request.environ.getlist("X-Forwarded-For"):
+       ip_forward_list = request.environ.getlist("X-Forwarded-For")
     else:
         ip_forward_list = 'rien du tout'
-    
-    if request.headers.get("X-Forwarded-For"):
-        ip_forward = request.headers.get("X-Forwarded-For")
+
+    if request.environ.get("X-Forwarded-For"):
+        ip_forward = request.environ.get("X-Forwarded-For")
     else:
         ip_forward = 'rien du tout'
 
