@@ -11,7 +11,7 @@ from flask_cors import CORS
 
 # Initialisation
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, )
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app where the database is located
 
 PEOPLE_FOLDER = os.path.join('static', 'people_photo')
@@ -62,26 +62,6 @@ class Variante(db.Model):
         return '<Var %r>' % self.id
 
 
-liste1 = ["chat.jpg", ["chat","cat","gatto"], ["0","0","0"]]
-liste2 = ["chien.jpg", ["chien","dog","cane"], ["0","0","0"]]
-liste3 = ["loup.jpg", ["loup","wolf","luppo"], ["0","0","0"]]
-liste4 = ["poisson.jpg", ["poisson","fish","pesce"], ["0","0","0"]]
-liste5 = ["lapin.jpg", ["lapin","bunny","caniglio"], ["0", "0", "0"]]
-
-biglist = [liste1, liste2, liste3, liste4, liste5]
-
-# def fillDB():
-#     for liste in biglist:
-#         full_filename = os.path.join(app.config['UPLOAD_FOLDER'], liste[0])
-#         newIm = Image(image_path=full_filename)
-#         db.session.add(newIm)
-#         for j, mots in enumerate(liste[1]):
-#             newVar = Variante(name=mots, lName=newIm)
-#             try:
-#                 db.session.add(newVar)    # Rajoute la tâche
-#                 db.session.commit()
-#             except:
-#                 return "appblème pour le commit"
 
 
 path = "C:\\Users\\quent\\Desktop\\Projet\\words_albanian.txt"
@@ -115,7 +95,7 @@ def get_my_ip():
         http_addr = request.environ['REMOTE_ADDR']
     else:
         http_addr = request.environ['HTTP_X_FORWARDED_FOR']
-    
+
     if 'X-Forwarded-For' in request.headers:
         proxy_data = request.headers['X-Forwarded-For']
         ip_list = proxy_data.split(',')
@@ -130,9 +110,14 @@ def get_my_ip():
     print('\n')
     print(type(ip_forward_list))
 
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
+        ip_addss = request.META['HTTP_X_FORWARDED_FOR'].split(",")
+    else:
+        ip_addss = request.META['REMOTE_ADDR']
+
     return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
                     'http_addr': http_addr, 'ip_list': ip_list,
-                    'routes': routes, 'ip_forward_list': ip_forward_list,
+                    'routes': routes, 'ip_addss': ip_addss,
                     }), 200
  
 
@@ -148,6 +133,8 @@ def home():
         http_addr = request.environ['REMOTE_ADDR']
     else:
         http_addr = request.environ['HTTP_X_FORWARDED_FOR']
+
+
 
     # if (ip_address in accept_ip):
     #     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
