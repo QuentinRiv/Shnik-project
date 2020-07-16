@@ -115,8 +115,15 @@ def get_my_ip():
         http_addr = request.environ['REMOTE_ADDR']
     else:
         http_addr = request.environ['HTTP_X_FORWARDED_FOR']
+    
+    if 'X-Forwarded-For' in request.headers:
+        proxy_data = request.headers['X-Forwarded-For']
+        ip_list = proxy_data.split(',')
+        # user_ip = ip_list[0]  # first address in list is User IP
+    else:
+        ip_list = request.remote_addr  # For local development
 
-    return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add, 'http_addr': http_addr}), 200
+    return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add, 'http_addr': http_addr, 'ip_list': ip_list}), 200
 
 
 @app.route('/', methods=['POST', 'GET'])
