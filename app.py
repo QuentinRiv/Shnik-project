@@ -123,7 +123,9 @@ def get_my_ip():
     else:
         ip_list = request.remote_addr  # For local development
 
-    return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add, 'http_addr': http_addr, 'ip_list': ip_list}), 200
+    routes = request.access_route[0]
+
+    return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add, 'http_addr': http_addr, 'ip_list': ip_list, 'routes': routes}), 200
 
 
 @app.route('/', methods=['POST', 'GET'])
