@@ -121,9 +121,8 @@ def get_my_ip():
     if 'X-Forwarded-For' in request.headers:
         proxy_data = request.headers['X-Forwarded-For']
         ip_list = proxy_data.split(',')
-        # user_ip = ip_list[0]  # first address in list is User IP
     else:
-        ip_list = 'nul'  # For local development
+        ip_list = request.remote_addr  # For local development
 
     routes = request.access_route
 
@@ -168,17 +167,18 @@ def get_my_ip():
             dico[key] = request.environ.get(key)
 
     dico['AAA'] = arr_key
+    dico['ip_list'] = ip_list
 
     print('Dico : \n', dico)
 
 
 
-    # return jsonify(dico), 200
+    return jsonify(dico), 200
 
-    return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
-                    'http_addr': http_addr, 'ip_list': ip_list,
-                    'routes': routes, 'ip_forward_list': ip_forward_list,
-                    'ip_forward': ip_forward}), 200
+    # return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
+    #                 'http_addr': http_addr, 'ip_list': ip_list,
+    #                 'routes': routes, 'ip_forward_list': ip_forward_list,
+    #                 'ip_forward': ip_forward}), 200
 
 
 @app.route('/', methods=['POST', 'GET'])
