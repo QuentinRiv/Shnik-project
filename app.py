@@ -151,7 +151,14 @@ def get_my_ip():
                'SERVER_NAME',
                'SERVER_PORT',
                'HTTP_HOST',
-               'HTTP_USER_AGENT'
+               'HTTP_USER_AGENT',
+               'HTTP_ACCESS_CONTROL_ALLOW_ORIGIN',
+               'HTTP_ORIGIN',
+               'HTTP_X_REQUEST_ID',
+               'HTTP_X_REQUEST_FOR',
+               'HTTP_X_REQUEST_PROTO',
+               'HTTP_VIA',
+               'REMOTE_ADDR'
                ]
 
     arr_key = []
