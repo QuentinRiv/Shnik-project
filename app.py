@@ -217,7 +217,7 @@ def home():
     elif website_ip != "http://130.60.24.55:5000":
         return 'No Access Granted : Wrong website_ip' + website_ip
 
-    return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add, http_addr=http_addr)
+    return render_template('welcome.html')
 
 def str2arr(string):
     return (string).split(',')
