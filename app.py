@@ -173,9 +173,13 @@ def get_my_ip():
 
 
 
-    return jsonify(dico), 200
- 
-    # return jsonify(request.environ)
+    # return jsonify(dico), 200
+
+    return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
+                    'http_addr': http_addr, 'ip_list': ip_list,
+                    'routes': routes, 'ip_forward_list': ip_forward_list,
+                    'ip_forward': ip_forward}), 200
+
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
