@@ -153,11 +153,17 @@ def get_my_ip():
                'HTTP_HOST',
                'HTTP_USER_AGENT'
                ]
+
+    arr_key = []
     for key in request.environ:
+        arr_key += [key]
         if key in all_key:
             dico[key] = request.environ.get(key)
 
+    dico['AAA'] = arr_key
+
     print('Dico : \n', dico)
+
 
 
     return jsonify(dico), 200
