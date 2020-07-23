@@ -108,6 +108,24 @@ def fillDB(path):
     print("DB correctly done")
     file1.close()
 
+@app.route("/tester")
+def essa():
+    website_ip = request.environ.get('HTTP_ORIGIN')
+    if website_ip is None:
+        if 'X-Forwarded-For' in request.headers:
+            proxy_data = request.headers['X-Forwarded-For']
+            ip_list = proxy_data.split(',')[0]
+        else:
+            ip_list = request.remote_addr  # For local development
+
+        if ip_list not in  ['127.0.0.1', '176.153.30.138']:
+            return 'No Access Granted : Website is None and not good ip_list' + ip_list
+
+    elif website_ip != "http://130.60.24.55:5000":
+        return 'No Access Granted : Wrong website_ip' + website_ip
+    
+    return 'Félicitations !'
+
 @app.route("/get_my_ip", methods=["GET"])
 def get_my_ip():
 
@@ -184,16 +202,6 @@ def get_my_ip():
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    # fillDB(path)
-    remote_addr = request.environ['REMOTE_ADDR']
-    ip_add = request.remote_addr
-    accept_ip = ["10.39.236.138", "127.0.0.1",
-                 "176.153.30.138", "10.39.211.254"]
-
-    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-        http_addr = request.environ['REMOTE_ADDR']
-    else:
-        http_addr = request.environ['HTTP_X_FORWARDED_FOR']
 
     website_ip = request.environ.get('HTTP_ORIGIN')
     if website_ip is None:
@@ -209,12 +217,6 @@ def home():
     elif website_ip != "http://130.60.24.55:5000":
         return 'No Access Granted : Wrong website_ip' + website_ip
 
-
-
-    # if (ip_address in accept_ip):
-    #     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
-    # else:
-    #     return "Not accepted, Mr. " + request.environ['REMOTE_ADDR']
     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add, http_addr=http_addr)
 
 def str2arr(string):
