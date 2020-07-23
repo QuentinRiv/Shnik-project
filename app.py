@@ -123,7 +123,7 @@ def essa():
 
     elif website_ip != "http://130.60.24.55:5000":
         return 'No Access Granted : Wrong website_ip' + website_ip
-    
+
     return 'Félicitations !'
 
 @app.route("/get_my_ip", methods=["GET"])
