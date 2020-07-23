@@ -1,3 +1,4 @@
+# from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask, render_template, url_for, request, redirect, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
@@ -11,6 +12,7 @@ from flask_cors import CORS
 
 # Initialisation
 app = Flask(__name__)
+
 CORS(app, supports_credentials=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app where the database is located
 
@@ -112,16 +114,16 @@ def get_my_ip():
     ip_add = request.remote_addr
 
     if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-        http_addr = request.environ['REMOTE_ADDR']
+        http_addr = 'pas interessant'
     else:
         http_addr = request.environ['HTTP_X_FORWARDED_FOR']
-    
+
     if 'X-Forwarded-For' in request.headers:
         proxy_data = request.headers['X-Forwarded-For']
         ip_list = proxy_data.split(',')
         # user_ip = ip_list[0]  # first address in list is User IP
     else:
-        ip_list = request.remote_addr  # For local development
+        ip_list = 'nul'  # For local development
 
     routes = request.access_route
 
@@ -129,17 +131,38 @@ def get_my_ip():
        ip_forward_list = request.headers.getlist("X-Forwarded-For")
     else:
         ip_forward_list = 'rien du tout'
-    
+
     if request.headers.get("X-Forwarded-For"):
         ip_forward = request.headers.get("X-Forwarded-For")
     else:
         ip_forward = 'rien du tout'
 
-    return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
-                    'http_addr': http_addr, 'ip_list': ip_list,
-                    'routes': routes, 'ip_forward_list': ip_forward_list,
-                    'ip_forward': ip_forward}), 200
+    print(request.environ)
+    print(type(request.environ))
+
+    dico = {}
+    all_key = ['REQUEST_METHOD',
+               'PATH_INFO',
+               'QUERY_STRING',
+               'REQUEST_URI',
+               'RAW_URI',
+               'REMOTE_ADDR',
+               'REMOTE_PORT',
+               'SERVER_NAME',
+               'SERVER_PORT',
+               'HTTP_HOST',
+               'HTTP_USER_AGENT'
+               ]
+    for key in request.environ:
+        if key in all_key:
+            dico[key] = request.environ.get(key)
+
+    print('Dico : \n', dico)
+
+
+    return jsonify(dico), 200
  
+    # return jsonify(request.environ)
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -308,8 +331,7 @@ def data():
     # path_im = image_query.image_path
     return jsonify(dico)
 
-from werkzeug.middleware.proxy_fix import ProxyFix
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=5, x_host=5)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
