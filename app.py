@@ -199,15 +199,15 @@ def home():
     if website_ip is None:
         if 'X-Forwarded-For' in request.headers:
             proxy_data = request.headers['X-Forwarded-For']
-            ip_list = proxy_data.split(',')
+            ip_list = proxy_data.split(',')[0]
         else:
             ip_list = request.remote_addr  # For local development
 
         if ip_list not in  ['127.0.0.1', '176.153.30.138']:
-            return 'No Access Granted !'
+            return 'No Access Granted : Website is None and not good ip_list' + ip_list
 
     elif website_ip != "http://130.60.24.55:5000":
-        return 'No Access Granted !'
+        return 'No Access Granted : Wrong website_ip' + website_ip
 
 
 
