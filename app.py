@@ -110,6 +110,7 @@ def fillDB(path):
 
 @app.route("/get_my_ip", methods=["GET"])
 def get_my_ip():
+
     remote_addr = request.environ['REMOTE_ADDR']
     ip_add = request.remote_addr
 
@@ -193,6 +194,22 @@ def home():
         http_addr = request.environ['REMOTE_ADDR']
     else:
         http_addr = request.environ['HTTP_X_FORWARDED_FOR']
+
+    website_ip = request.environ.get('HTTP_ORIGIN')
+    if website_ip is None:
+        if 'X-Forwarded-For' in request.headers:
+            proxy_data = request.headers['X-Forwarded-For']
+            ip_list = proxy_data.split(',')
+        else:
+            ip_list = request.remote_addr  # For local development
+
+        if ip_list not in  ['127.0.0.1', '176.153.30.138']:
+            return 'No Access Granted !'
+
+    elif website_ip != "http://130.60.24.55:5000":
+        return 'No Access Granted !'
+
+
 
     # if (ip_address in accept_ip):
     #     return render_template('welcome.html', remote_addr=remote_addr, ip_add=ip_add)
