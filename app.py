@@ -265,9 +265,11 @@ def data():
         names_ordered = names[order].tolist()
         scores_ordered = np.sort(scores).tolist()
         flags_ordered = flags[order].tolist()
+        nb_ans = image.nb_ans
         dico[image.name] = {'variance': names_ordered,
                             'scores': scores_ordered,
-                            'flag': flags_ordered}
+                            'flag': flags_ordered,
+                            'nb_ans': nb_ans}
         dico['names'] += [image.name]
 
 
