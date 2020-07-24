@@ -199,10 +199,7 @@ def get_my_ip():
     #                 'routes': routes, 'ip_forward_list': ip_forward_list,
     #                 'ip_forward': ip_forward}), 200
 
-
-@app.route('/', methods=['POST', 'GET'])
-def home():
-
+def checkip():
     website_ip = request.environ.get('HTTP_ORIGIN')
     if website_ip is None:
         if 'X-Forwarded-For' in request.headers:
@@ -211,11 +208,19 @@ def home():
         else:
             ip_list = request.remote_addr  # For local development
 
-        if ip_list not in  ['127.0.0.1', '176.153.30.138']:
+        if ip_list not in ['127.0.0.1', '176.153.30.138']:
             return 'No Access Granted : Website is None and not good ip_list' + ip_list
 
     elif website_ip != "http://130.60.24.55:5000":
         return 'No Access Granted : Wrong website_ip' + website_ip
+
+    return 'OK'
+
+@app.route('/', methods=['POST', 'GET'])
+def home():
+
+    if checkip() != 'OK':
+        return checkip()
 
     return render_template('welcome.html')
 
