@@ -22,30 +22,13 @@ app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
 # initialise the db, with the setting of our app
 db = SQLAlchemy(app)
 
-# class Image(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)    # Clé primaire
-#     image_path = db.Column(db.String(200), nullable=False, unique=True)
-#     info = db.relationship('Variante', backref='lName')
-
-#     # Function that gonna returns a string everytime we create a new element
-#     def __repr__(self):
-#         return '<Im %r>' % self.id
-
-# class Variante(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)    # Clé primaire
-#     name = db.Column(db.String(1000), default="")
-#     count = db.Column(db.Integer, default=0)
-#     im_id = db.Column(db.Integer, db.ForeignKey('image.id'))
-
-#     # Function that gonna returns a string everytime we create a new element
-#     def __repr__(self):
-#         return '<Var %r>' % self.id
 
 
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)    # Clé primaire
     name = db.Column(db.String(50), nullable=False, unique=True)
     image_path = db.Column(db.String(200), nullable=False, unique=True)
+    nb_ans = db.Column(db.Integer, default=0)
     info = db.relationship('Variante', backref='lName')
 
     # Function that gonna returns a string everytime we create a new element
@@ -63,27 +46,6 @@ class Variante(db.Model):
     def __repr__(self):
         return '<Var %r>' % self.id
 
-
-liste1 = ["chat.jpg", ["chat","cat","gatto"], ["0","0","0"]]
-liste2 = ["chien.jpg", ["chien","dog","cane"], ["0","0","0"]]
-liste3 = ["loup.jpg", ["loup","wolf","luppo"], ["0","0","0"]]
-liste4 = ["poisson.jpg", ["poisson","fish","pesce"], ["0","0","0"]]
-liste5 = ["lapin.jpg", ["lapin","bunny","caniglio"], ["0", "0", "0"]]
-
-biglist = [liste1, liste2, liste3, liste4, liste5]
-
-# def fillDB():
-#     for liste in biglist:
-#         full_filename = os.path.join(app.config['UPLOAD_FOLDER'], liste[0])
-#         newIm = Image(image_path=full_filename)
-#         db.session.add(newIm)
-#         for j, mots in enumerate(liste[1]):
-#             newVar = Variante(name=mots, lName=newIm)
-#             try:
-#                 db.session.add(newVar)    # Rajoute la tâche
-#                 db.session.commit()
-#             except:
-#                 return "appblème pour le commit"
 
 
 path = "C:\\Users\\quent\\Desktop\\Projet\\words_albanian.txt"
@@ -127,40 +89,17 @@ def get_my_ip():
     else:
         ip_list = request.remote_addr  # For local development
 
-    routes = request.access_route
-
-    if request.headers.getlist("X-Forwarded-For"):
-       ip_forward_list = request.headers.getlist("X-Forwarded-For")
-    else:
-        ip_forward_list = 'rien du tout'
-
-    if request.headers.get("X-Forwarded-For"):
-        ip_forward = request.headers.get("X-Forwarded-For")
-    else:
-        ip_forward = 'rien du tout'
 
     print(request.environ)
     print(type(request.environ))
 
     dico = {}
-    all_key = ['REQUEST_METHOD',
-               'PATH_INFO',
-               'QUERY_STRING',
-               'REQUEST_URI',
-               'RAW_URI',
-               'REMOTE_ADDR',
-               'REMOTE_PORT',
-               'SERVER_NAME',
-               'SERVER_PORT',
-               'HTTP_HOST',
-               'HTTP_USER_AGENT',
-               'HTTP_ACCESS_CONTROL_ALLOW_ORIGIN',
-               'HTTP_ORIGIN',
-               'HTTP_X_REQUEST_ID',
-               'HTTP_X_REQUEST_FOR',
-               'HTTP_X_REQUEST_PROTO',
-               'HTTP_VIA',
-               'REMOTE_ADDR'
+    all_key = ['REQUEST_METHOD',  'PATH_INFO',
+               'SERVER_PORT',     'HTTP_HOST',
+               'HTTP_USER_AGENT', 'HTTP_ACCESS_CONTROL_ALLOW_ORIGIN',
+               'HTTP_ORIGIN',     'HTTP_X_REQUEST_ID',
+               'HTTP_X_REQUEST_FOR',  'HTTP_X_REQUEST_PROTO',
+               'HTTP_VIA',        'REMOTE_ADDR'
                ]
 
     arr_key = []
@@ -202,17 +141,12 @@ def checkip():
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
-
     if checkip() != 'OK':
         return make_response(jsonify({"message": checkip()}), 200)
+    # fillDB()
 
     return render_template('welcome.html')
 
-def str2arr(string):
-    return (string).split(',')
-
-def arr2str(array):
-    return ','.join(array)
 
 
 
@@ -250,7 +184,9 @@ def create_entry():
     name = req['name']
     new_words = req['newwords']
     image_query = Image.query.filter_by(name=name).first()
+    image_query.nb_ans += 1
 
+    # Add new words
     if (new_words != ""):
         newVar = Variante(name=new_words, count='1', lName=image_query)
         try:
@@ -259,6 +195,7 @@ def create_entry():
         except:
             return "problème pour le commit"
 
+    # +1 for selected words
     selected = req['selwords']
     if (selected != []):
         for selection in selected:
@@ -270,6 +207,7 @@ def create_entry():
             except:
                 return "Problème pour le commit"
 
+    # Flag the words
     flagge = req['flagwords']
     if (flagge != []):
         for flag_word in flagge:
@@ -331,10 +269,8 @@ def data():
                             'scores': scores_ordered,
                             'flag': flags_ordered}
         dico['names'] += [image.name]
-    # vars = image_query.info
-    # words = np.array([vari.name for vari in vars]).tolist()
-    # scores = np.array([vari.count for vari in vars]).tolist()
-    # path_im = image_query.image_path
+
+
     return jsonify(dico)
 
 
