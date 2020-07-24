@@ -143,7 +143,7 @@ def checkip():
 def home():
     if checkip() != 'OK':
         return make_response(jsonify({"message": checkip()}), 200)
-    # fillDB()
+    # fillDB(path)
 
     return render_template('welcome.html')
 
