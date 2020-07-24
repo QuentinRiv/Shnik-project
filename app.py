@@ -108,23 +108,7 @@ def fillDB(path):
     print("DB correctly done")
     file1.close()
 
-@app.route("/tester")
-def essa():
-    website_ip = request.environ.get('HTTP_ORIGIN')
-    if website_ip is None:
-        if 'X-Forwarded-For' in request.headers:
-            proxy_data = request.headers['X-Forwarded-For']
-            ip_list = proxy_data.split(',')[0]
-        else:
-            ip_list = request.remote_addr  # For local development
 
-        if ip_list not in  ['127.0.0.1', '176.153.30.138']:
-            return 'No Access Granted : Website is None and not good ip_list' + ip_list
-
-    elif website_ip != "http://130.60.24.55:5000":
-        return 'No Access Granted : Wrong website_ip' + website_ip
-
-    return 'Félicitations !'
 
 @app.route("/get_my_ip", methods=["GET"])
 def get_my_ip():
@@ -209,10 +193,10 @@ def checkip():
             ip_list = request.remote_addr  # For local development
 
         if ip_list not in ['127.0.0.1', '176.153.30.138']:
-            return 'No Access Granted : Website is None and not good ip_list' + ip_list
+            return 'No Access Granted : Website is None and not good ip_list (' + ip_list + ')'
 
     elif website_ip != "http://130.60.24.55:5000":
-        return 'No Access Granted : Wrong website_ip' + website_ip
+        return 'No Access Granted : Wrong website_ip (' + website_ip + ')'
 
     return 'OK'
 
@@ -220,7 +204,7 @@ def checkip():
 def home():
 
     if checkip() != 'OK':
-        return checkip()
+        return make_response(jsonify({"message": checkip()}), 200)
 
     return render_template('welcome.html')
 
@@ -230,24 +214,15 @@ def str2arr(string):
 def arr2str(array):
     return ','.join(array)
 
-@app.route('/random')
-def randomIm():
-    id = random.randint(1,5)
-    return redirect('/display/'+str(id))
 
 
-@app.route('/essai', methods=['POST', 'GET'])
-def bidule():
-    if request.method == 'GET':
-        return render_template('indexx.html')
-
-@app.route('/test/<string:name>', methods=['POST', 'GET'])
+@app.route('/image/<string:name>', methods=['POST', 'GET'])
 def index(name):
     image_query = Image.query.filter_by(name=name).first()                  # Get the corresponding image
-    vars = image_query.info                                             # Get the variantes of the images
-    words = np.array([vari.name for vari in vars])                     # Put the words into an array (np is used to sort)
-    scores = np.array([vari.count for vari in vars])                    # Get the scores
-    path_im = image_query.image_path                                    # Path of the image
+    vars = image_query.info                                                 # Get the variantes of the images
+    words = np.array([vari.name for vari in vars])                          # Put the words into an array (np is used to sort)
+    scores = np.array([vari.count for vari in vars])                        # Get the scores
+    path_im = image_query.image_path                                        # Path of the image
 
     # Order the words, according to their score
     ordre = scores.argsort()[::-1]
@@ -261,6 +236,9 @@ def index(name):
 
 @app.route("/addDB", methods=["POST"])
 def create_entry():
+
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
 
     # Get the JSON data
     req = request.get_json(force=True)
@@ -305,17 +283,6 @@ def create_entry():
 
     return make_response(jsonify({"message": "OK : word(s) added"}), 200)
 
-@app.route("/display/<string:name>", methods=['GET'])
-def display(name):
-    print("name")
-    # look at all the database content in the order they were created, and return all of them
-    image_query = Image.query.filter_by(name=name).first()                  # Get the corresponding image
-    vars = image_query.info                                             # Get the variantes of the images
-    words = np.array([vari.name for vari in vars]).tolist()            # Put the words into an array (np is used to sort)
-    scores = np.array([vari.count for vari in vars]).tolist()           # Get the scores
-    path_im = image_query.image_path                                    # Path of the image
-
-    return jsonify({'path': path_im, 'words': words, 'count': scores})
 
 # Route to delete a word in a database, given the index of an image
 @app.route("/delete", methods=["POST"])
@@ -323,8 +290,6 @@ def delete_entry():
 
     # Get the JSON data
     req = request.get_json(force=True)
-
-    print(req)  # Just print what we received
 
     # Get the info for adding the new word(s)
     name = req['name']
