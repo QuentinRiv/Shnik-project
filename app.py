@@ -174,7 +174,7 @@ def create_entry():
 
     # Get the info for adding the new word(s)
     name = req['name']
-    new_words = req['newwords']
+    new_words = req['newwords'].lower()
     image_query = Image.query.filter_by(name=name).first()
     image_query.nb_ans += 1
 
