@@ -48,6 +48,7 @@ class Variante(db.Model):
 
 
 path = "C:\\Users\\quent\\Desktop\\Projet\\words_albanian.txt"
+path_transl = "C:\\Users\\quent\\Desktop\\Projet\\transl_alb.txt"
 def fillDB(path):
     file1 = open(path, 'r', encoding='utf-8')
     lines = file1.readlines()
@@ -55,10 +56,18 @@ def fillDB(path):
     for line in lines[2:]:
         if line != '\n':
             words += [line[:-1]]
+    
+    file2 = open(path_transl, 'r', encoding='utf-8')
+    lines_transl = file2.readlines()
+    words2 = []
+    for line in lines_transl[2:]:
+        if line != '\n':
+            words2 += [line[:-1]]
+
     print(words)
-    for word in words:
+    for i, word in enumerate(words):
         newIm = Image(name=word, image_path='/static/data/leksik/' + word + '.jpg')
-        newVar = Variante(name=word, lName=newIm)
+        newVar = Variante(name=words2[i], lName=newIm)
         db.session.add(newIm)
         db.session.add(newVar)
         try:
