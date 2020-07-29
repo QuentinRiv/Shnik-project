@@ -1,4 +1,3 @@
-# from werkzeug.contrib.fixers import ProxyFix
 from flask import Flask, render_template, url_for, request, redirect, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
@@ -50,7 +49,7 @@ class Variante(db.Model):
 
 path = "C:\\Users\\quent\\Desktop\\Projet\\words_albanian.txt"
 def fillDB(path):
-    file1 = open(path, 'r')
+    file1 = open(path, 'r', encoding='utf-8')
     lines = file1.readlines()
     words = []
     for line in lines[2:]:
@@ -90,9 +89,6 @@ def get_my_ip():
         ip_list = request.remote_addr  # For local development
 
 
-    print(request.environ)
-    print(type(request.environ))
-
     dico = {}
     all_key = ['REQUEST_METHOD',  'PATH_INFO',
                'SERVER_PORT',     'HTTP_HOST',
@@ -117,10 +113,6 @@ def get_my_ip():
 
     return jsonify(dico), 200
 
-    # return jsonify({'remote_addr': remote_addr, 'ip_add': ip_add,
-    #                 'http_addr': http_addr, 'ip_list': ip_list,
-    #                 'routes': routes, 'ip_forward_list': ip_forward_list,
-    #                 'ip_forward': ip_forward}), 200
 
 def checkip():
     website_ip = request.environ.get('HTTP_ORIGIN')
