@@ -1,0 +1,8 @@
+A chaque fois qu'un client envoie une requête HTTP au serveur, il le fait via une URL
+
+Un serveur retourne du code HTML
+
+Le serveur Flask renvoie habituellement du code HTML. Ce code permet d'afficher une page Web interprétable par un être humain. Mais ici, nous n'allons pas au serveur du code HTML, on va plutôt lui demander un fichier au format JSON, c'est-à-dire des données brutes interprétables par un programme. (Ce programme, situé côté client sera programmé plus tard)
+Le programme qui délivre les données brutes, on l'appelera une API
+
+Requête asynchrone : le serveur, qui a fait une requête, n'attend pas que la requête obtienne une réponse pour passer à l'instruction suivante

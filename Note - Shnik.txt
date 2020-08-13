@@ -1,0 +1,25 @@
+serveur porposant une API robuste peremetannt d'échanger des infos en fontion des requetes des utilisateurs
+but : on présente une image à l'utilisateur, avec 2 possiblités de l'appeler, et l'utilisaeur a 2 choix, + un champ libre pour entrer sa propre variante
+(pour l'instant, on a 50 images,  avec une ou deux variantes en albanais)
+2 api : récupérer et envoyer 2 
+o compte le # de fois qu'une variante a été cochée, pour faire des stats
+
+leksik va intéroger une bd , sous API (SQLLite), et renvoyer 
+flagger les mots offensifs
+
+keyword = index
+liste des variantes (tables de concept, avec keyword)
+concept = mot lié à l'image
+usage_count = # de fois mots utilisés
+username = nom de l'utilisateurs qui a mis des mots offensifs
+
+à partir d'in mot clé, il récupère ... (/get)
+/push : envoie des données , que je dois récupérer
+/stats : récupérere des stats (on aimerati avoir une page web facile affichant 
+
+security : s'assurer que que les bonnes personnes peuvent y accéder 
+
+je dois tester avec des fausses pages web
+indiquer comment utiliser l'API (quelles commandes utiliser (mélanges Javascript et Python))
+
+le mardi 7 : à 10h, 3e étage, gauche, porte à badger (toquer pour l'apperler)

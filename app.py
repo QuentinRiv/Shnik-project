@@ -56,7 +56,7 @@ def fillDB(path):
     for line in lines[2:]:
         if line != '\n':
             words += [line[:-1]]
-    
+
     file2 = open(path_transl, 'r', encoding='utf-8')
     lines_transl = file2.readlines()
     words2 = []
@@ -78,48 +78,6 @@ def fillDB(path):
     print("DB correctly done")
     file1.close()
 
-
-
-@app.route("/get_my_ip", methods=["GET"])
-def get_my_ip():
-
-    remote_addr = request.environ['REMOTE_ADDR']
-    ip_add = request.remote_addr
-
-    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-        http_addr = 'pas interessant'
-    else:
-        http_addr = request.environ['HTTP_X_FORWARDED_FOR']
-
-    if 'X-Forwarded-For' in request.headers:
-        proxy_data = request.headers['X-Forwarded-For']
-        ip_list = proxy_data.split(',')
-    else:
-        ip_list = request.remote_addr  # For local development
-
-
-    dico = {}
-    all_key = ['REQUEST_METHOD',  'PATH_INFO',
-               'SERVER_PORT',     'HTTP_HOST',
-               'HTTP_USER_AGENT', 'HTTP_ACCESS_CONTROL_ALLOW_ORIGIN',
-               'HTTP_ORIGIN',     'HTTP_X_REQUEST_ID',
-               'HTTP_X_REQUEST_FOR',  'HTTP_X_REQUEST_PROTO',
-               'HTTP_VIA',        'REMOTE_ADDR'
-               ]
-
-    arr_key = []
-    for key in request.environ:
-        arr_key += [key]
-        if key in all_key:
-            dico[key] = request.environ.get(key)
-
-    dico['AAA'] = arr_key
-    dico['ip_list'] = ip_list
-
-    print('Dico : \n', dico)
-
-
-
     return jsonify(dico), 200
 
 
@@ -140,7 +98,7 @@ def checkip():
 
     return 'OK'
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/')
 def home():
     if checkip() != 'OK':
         return make_response(jsonify({"message": checkip()}), 200)
