@@ -192,7 +192,7 @@ def create_entry():
     # Flag the words
     flagge = req['flagwords']
     if (flagge != []):
-        for flag_word in flagge:
+        for flag_word in set(flagge):
             selElem = Variante.query.filter_by(name=flag_word).first()
             if selElem is None:
                 return 'No Variance found with the name ' + flag_word
