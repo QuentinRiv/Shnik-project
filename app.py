@@ -185,7 +185,7 @@ def create_entry():
         for selection in selected:
             selElem = Variante.query.filter_by(name=selection).first()
             if selElem is None:
-                return 'No Variance found with the name ' + flag_word
+                return 'No Variance found with the name ' + selection
             selElem.count += 1
             try:
                 db.session.commit()
