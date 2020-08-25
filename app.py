@@ -251,15 +251,18 @@ def data():
         names = np.array([var.name for var in vars])
         scores = np.array([var.count for var in vars])
         flags = np.array([var.flag for var in vars])
+        user_info = np.array([var.user_info for var in vars])
         order = scores.argsort()[::-1]
         names_ordered = names[order].tolist()
         scores_ordered = np.sort(scores).tolist()[::-1]
         flags_ordered = flags[order].tolist()
+        u_info_ordered = user_info[order].tolist()
         nb_ans = image.nb_ans
         dico[image.name] = {'variance': names_ordered,
                             'scores': scores_ordered,
                             'flag': flags_ordered,
-                            'nb_ans': nb_ans}
+                            'nb_ans': nb_ans,
+                            'user_info' : u_info_ordered}
         dico['names'] += [image.name]
 
     return jsonify(dico)
