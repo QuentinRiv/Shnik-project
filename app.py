@@ -234,6 +234,7 @@ def stats():
 @app.route('/download')
 def post():
     response = requests.get("https://retry-unige.herokuapp.com/alldata")
+    # TODO : Rajouter l'adresse du serveur
     print('\nJSON :')
     data = json.loads(response.text)
     csv_array = [
