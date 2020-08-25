@@ -40,6 +40,7 @@ class Variante(db.Model):
     count = db.Column(db.Integer, default=1)
     flag = db.Column(db.Integer, default=0)
     im_id = db.Column(db.Integer, db.ForeignKey('image.id'))
+    user_info = db.Column(db.String(200), nullable=False, default='default_user')
 
     # Function that gonna returns a string everytime we create a new element
     def __repr__(self):
@@ -159,6 +160,7 @@ def create_entry():
 
     # Get the info for adding the new word(s)
     name = req['name']
+    user_info = req['user_data']
     new_words = req['newwords'].lower()
     image_query = Image.query.filter_by(name=name).first()
 
@@ -169,7 +171,8 @@ def create_entry():
 
     # Add new words
     if (new_words != ""):
-        newVar = Variante(name=new_words, count='1', lName=image_query)
+        [email, id, fullname] = user_info.split(',')
+        newVar = Variante(name=new_words, count='1', lName=image_query, user_info=email+','+id+','+fullname)
         try:
             db.session.add(newVar)
             db.session.commit()
