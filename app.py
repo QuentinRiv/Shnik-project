@@ -1,12 +1,23 @@
 from flask import Flask, render_template, url_for, request, redirect, make_response
+from flask import jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
+
+from flask_cors import CORS
+from flask_login import UserMixin, LoginManager
+from flask_login import login_required, current_user
+from flask_login import login_user, logout_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from datetime import datetime
 import os
 import random
 import numpy as np
-from flask import jsonify
-from flask_cors import CORS
+import requests
+import json
+import io
+import csv
+
 
 
 # Initialisation
@@ -14,13 +25,18 @@ app = Flask(__name__)
 
 CORS(app, supports_credentials=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app where the database is located
-
-PEOPLE_FOLDER = os.path.join('static', 'people_photo')
-app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
+# Tell our app where the database is located
+app.config['SECRET_KEY'] = 'secret-key-goes-here'
 
 # initialise the db, with the setting of our app
 db = SQLAlchemy(app)
 
+db.init_app(app)
+
+login_manager = LoginManager()
+login_manager.login_view = 'login'     # Page name to log in
+login_manager.login_message = u"Nop ! You cannot access to this page..."
+login_manager.init_app(app)
 
 
 class Image(db.Model):
@@ -46,16 +62,24 @@ class Variante(db.Model):
     def __repr__(self):
         return '<Var %r>' % self.id
 
+class User(UserMixin, db.Model):
+    # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(1000))
 
-path = "./words_albanian.txt"
-path_transl = "./transl_alb.txt"
 
 
-def fillDB(path):
+
+def fillDB():
+    path = "./words_albanian.txt"
+    path_transl = "./transl_alb.txt"
+
     try:
         file1 = open(path, 'r', encoding='utf-8')
     except:
-        return make_response(jsonify({"message": "Problem to open file " + path}), 404)
+        return make_response(jsonify({"message": "Problem to open the file " + path}), 404)
 
     lines = file1.readlines()
     words = []
@@ -86,7 +110,7 @@ def fillDB(path):
         except:
             return "Problème pour le commit"
     print("DB correctly done")
-    file1.close()
+    file2.close()
 
     return 0
 
@@ -109,19 +133,138 @@ def checkip():
     return 'OK'
 
 
-@app.route('/')
+@app.route('/main')
 def home():
     if checkip() != 'OK':
         return make_response(jsonify({"message": checkip()}), 200)
-    ans = fillDB(path)
+    ans = fillDB()
     if ans != 0:
         return ans
 
     return render_template('welcome.html')
 
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    # since the user_id is just the primary key of our user table, use it in the query for the user
+    return User.query.get(int(user_id))
+
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', name=current_user.name)
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+
+@app.route('/signup', methods=['POST'])
+def signup_post():
+    email = request.form.get('email')
+    name = request.form.get('name')
+    password = request.form.get('password')
+
+    # if this returns a user, then the email already exists in database
+    user = User.query.filter_by(email=email).first()
+
+    if user:  # if a user is found, we want to redirect back to signup page so user can try again
+        flash('Email address already exists')
+        return redirect(url_for('auth.signup'))
+
+    # create a new user with the form data. Hash the password so the plaintext version isn't saved.
+    new_user = User(email=email,
+                    name=name,
+                    password=generate_password_hash(password, method='sha256'))
+
+    # add the new user to the database
+    db.session.add(new_user)
+    db.session.commit()
+
+    return redirect(url_for('login'))
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+@app.route('/login', methods=['POST'])
+def login_post():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    remember = True if request.form.get('remember') else False
+
+    user = User.query.filter_by(email=email).first()
+
+    print(user)
+
+    # check if the user actually exists
+    # take the user-supplied password, hash it, and compare it to the hashed password in the database
+    if not user or not check_password_hash(user.password, password):
+        flash('Please check your login details and try again.')
+        # if the user doesn't exist or password is wrong, reload the page
+        return redirect(url_for('login'))
+
+    # if the above check passes, then we know the user has the right credentials
+    login_user(user, remember=remember)
+    return redirect(url_for('profile'))
+
+
+@app.route('/stats')
+@login_required
+def stats():
+    return render_template('stats.html')
+
+
+@app.route('/download')
+def post():
+    response = requests.get("https://retry-unige.herokuapp.com/alldata")
+    print('\nJSON :')
+    data = json.loads(response.text)
+    csv_array = [
+        ["IMAGE", "NANSWERS", "VARIANCES"],
+    ]
+    for word in data['names']:
+        sCsv = ""
+        mot = data[word]
+        aCsv = [word, mot['nb_ans']]
+        for i, vari in enumerate(data[word]['variance']):
+            if sCsv != "":
+                sCsv += "&"
+            sCsv += "(" + str(mot['scores'][i])
+            if mot['flag'][i] != 0:
+                sCsv += "/" + str(mot['flag'][i])
+            sCsv += ")" + vari
+        aCsv += [sCsv.encode("utf-8")]
+        print(aCsv)
+        csv_array += [aCsv]
+
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerows(csv_array)
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=shnik.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
+
+
 @app.route('/image/<string:name>', methods=['POST', 'GET'])
-def index(name):
+def image(name):
     # Get the corresponding image
     image_query = Image.query.filter_by(name=name).first()
 
@@ -155,8 +298,7 @@ def create_entry():
     # Get the JSON data
     req = request.get_json(force=True)
 
-    print("Req = ")
-    print(req)
+    print("Req = \n", req)
 
     # Get the info for adding the new word(s)
     name = req['name']
@@ -167,7 +309,7 @@ def create_entry():
     if image_query is None:
         return 'No image found with the name ' + name
 
-    image_query.nb_ans += 1
+    image_query.nb_ans += 1     # Update the number of answer
 
     # Add new words
     if (new_words != ""):
@@ -228,16 +370,16 @@ def delete_entry():
         try:
             db.session.delete(elem2del)
             db.session.commit()     # Update
-        except:
-            return make_response(jsonify({"message": "Problem to delete in the database"}), 404)
+        except SQLAlchemyError as e:
+            return make_response(jsonify({"message": "Problem to delete in the database  => " + e}), 404)
 
     # Response we hope to return
     return make_response(jsonify({"message": "OK : Word(s) deleted"}), 200)
 
 
-@app.route('/stats')
-def stats():
-    return render_template('stats.html')
+# @app.route('/stats')
+# def stats():
+#     return render_template('stats.html')
 
 
 @app.route('/alldata')
