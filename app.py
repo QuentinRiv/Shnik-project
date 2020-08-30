@@ -114,7 +114,6 @@ def fillDB():
 
     return 0
 
-
 def checkip():
     website_ip = request.environ.get('HTTP_ORIGIN')
     if website_ip is None:
@@ -313,14 +312,15 @@ def create_entry():
     image_query.nb_ans += 1     # Update the number of answer
 
     # Add new words
-    if (new_words != ""):
-        [email, id, fullname] = user_info.split(',')
-        newVar = Variante(name=new_words, count='1', lName=image_query, user_info=email+','+id+','+fullname)
-        try:
-            db.session.add(newVar)
-            db.session.commit()
-        except:
-            return "problem for the commit"
+    if (new_words != []):
+        for new_word in new_words:
+            [email, id, fullname] = user_info.split(',')
+            newVar = Variante(name=new_word, count='1', lName=image_query, user_info=email+','+id+','+fullname)
+            try:
+                db.session.add(newVar)
+                db.session.commit()
+            except:
+                return "problem for the commit"
 
     # +1 for selected words
     selected = req['selwords']
