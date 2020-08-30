@@ -303,7 +303,7 @@ def create_entry():
     # Get the info for adding the new word(s)
     name = req['name']
     user_info = req['user_data']
-    new_words = req['newwords'].lower()
+    new_words = req['newwords']
     image_query = Image.query.filter_by(name=name).first()
 
     if image_query is None:
@@ -315,7 +315,8 @@ def create_entry():
     if (new_words != []):
         for new_word in new_words:
             [email, id, fullname] = user_info.split(',')
-            newVar = Variante(name=new_word, count='1', lName=image_query, user_info=email+','+id+','+fullname)
+            newVar = Variante(name=new_word.lower(), count='1',
+                              lName=image_query, user_info=email+','+id+','+fullname)
             try:
                 db.session.add(newVar)
                 db.session.commit()
