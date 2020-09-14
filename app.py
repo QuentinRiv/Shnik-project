@@ -132,11 +132,11 @@ def checkip():
 
 @app.route('/main')
 def home():
-    if checkip() != 'OK':
-        return make_response(jsonify({"message": checkip()}), 200)
-    ans = fillDB()
-    if ans != 0:
-        return ans
+    # if checkip() != 'OK':
+    #     return make_response(jsonify({"message": checkip()}), 200)
+    # ans = fillDB()
+    # if ans != 0:
+    #     return ans
 
     return render_template('welcome.html')
 
@@ -207,8 +207,6 @@ def login_post():
     remember = True if request.form.get('remember') else False
 
     user = User.query.filter_by(email=email).first()
-
-    print(user)
 
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
