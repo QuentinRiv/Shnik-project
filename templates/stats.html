@@ -106,7 +106,7 @@
             $("button").on("click", function () {
                 name_button = this.id;
                 name_var.push(this.value);
-                delete_word(API_path + `delete`, this.id);
+                delete_word(`https://retry-unige.herokuapp.com/` + `delete`, this.id);
             });
 
             flaggedWords = [];
@@ -120,7 +120,7 @@
 
         var name_button = "";
         var name_var = [];
-        path = API_path + `alldata`;
+        path = `https://retry-unige.herokuapp.com/` + `alldata`;
         prepareWords(path);
 
         async function delete_message(path_del, word) {
