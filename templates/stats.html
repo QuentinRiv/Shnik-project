@@ -10,11 +10,25 @@
 
         <table id="tab" class="table center-table"></table>
 
-        <h1>Global statistics</h1>
-        <div>Total answers : <span id="total" class="total">0</span></div>
-        <div>Total flags : <span id="nflag" class="nflag">0</span></div>
-        <div>Number of new words : <span id="newWords" class="newWords">0</span></div>
-        <div>Number of checked words : <span id="checkedWords" class="checkedWords">...</span></div>
+        <h1 class="title">Global statistics</h1>
+        <table class="table center-table">
+            <tr>
+                <td>Total answers : </td>
+                <td><span id="total" class="total">0</span></td>
+            </tr>
+            <tr>
+                <td>Total flags : </td>
+                <td><span id="nflag" class="nflag">0</span></td>
+            </tr>
+            <tr>
+                <td>Number of new words : </td>
+                <td><span id="newWords" class="newWords">0</span></td>
+            </tr>
+            <tr>
+                <td>Number of checked words : </td>
+                <td><span id="checkedWords" class="checkedWords">...</span></td>
+            </tr>
+        </table>
     </main>
 
     <!-- Import Bootstrap bundle -->
@@ -36,6 +50,8 @@
 
 
         async function prepareWords(path) {
+            API_path = `https://retry-unige.herokuapp.com/`; // TO MODIFY
+
             var data = await getData(path);
             var allNames = data['names'];
             var full_tab = ``;
@@ -43,6 +59,7 @@
             var nFlag = 0;
             var nImage = allNames.length;
             var nVariance = -nImage;
+            var nChecked = 0;
 
             full_tab += `<tr class="th_tr">`;
             full_tab += `<th colspan="1"><b>Image</b></th>`
@@ -53,6 +70,7 @@
             for (var name of allNames) {
                 full_tab += `<tr>`;
                 var path_i = "/static/dictionary/" + name +".jpg";
+                // var path_i = "https://drive.switch.ch/index.php/apps/files/?dir=/dictionary2&fileid=2626002808#/files_mediaviewer/" + name +".jpg";
                 full_tab += `<td style="width: 150px;"><img id="${name}" class="${name}" src=${path_i} alt /></td>`;
                 // full_tab += `<td><img id="ima" class="wo_ima" src="/static/people_photo/chat.jpg" alt /></td>`;
 
@@ -63,6 +81,7 @@
                 var taille = data[name]['variance'].length;
                 for (var num of Array(taille).keys()) {
                     nVariance += 1;
+                    nChecked += data[name]['scores'][num]-1;
                     full_tab += `<td>`;
                     full_tab += `<p class="alignleft">(${data[name]['scores'][num]})`;
                     if (data[name]['flag'][num] > 0) {
@@ -87,7 +106,7 @@
             $("button").on("click", function () {
                 name_button = this.id;
                 name_var.push(this.value);
-                delete_word(`https://retry-unige.herokuapp.com/delete`, this.id);
+                delete_word(API_path + `delete`, this.id);
             });
 
             flaggedWords = [];
@@ -95,12 +114,13 @@
             $('#total').text(total);
             $('#nflag').text(nFlag);
             $('#newWords').text(nVariance);
+            $('#checkedWords').text(nChecked);
 
         }
 
         var name_button = "";
         var name_var = [];
-        path = `https://retry-unige.herokuapp.com/alldata`;
+        path = API_path + `alldata`;
         prepareWords(path);
 
         async function delete_message(path_del, word) {
