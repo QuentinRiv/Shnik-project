@@ -98,7 +98,6 @@ def fillDB():
         if line != '\n':
             words2 += [line[:-1]]
 
-    print(words)
     for i, word in enumerate(words):
         newIm = Image(
             name=word, image_path='/static/data/leksik/' + word + '.jpg')
@@ -109,7 +108,6 @@ def fillDB():
             db.session.commit()
         except:
             return "Problème pour le commit"
-    print("DB correctly done")
     file2.close()
 
     return 0
@@ -234,7 +232,6 @@ def stats():
 def post():
     response = requests.get("https://retry-unige.herokuapp.com/alldata")
     # TO MODIFY
-    print('\nJSON :')
     data = json.loads(response.text)
     csv_array = [
         ["IMAGE", "NANSWERS", "VARIANCES"],
@@ -251,7 +248,6 @@ def post():
                 sCsv += "/" + str(mot['flag'][i])
             sCsv += ")" + vari
         aCsv += [sCsv.encode("utf-8")]
-        print(aCsv)
         csv_array += [aCsv]
 
     si = io.StringIO()
@@ -283,8 +279,6 @@ def image(name):
     ordre = scores.argsort()[::-1]
     path_im = image_query.image_path
     sorted_words = words[ordre].tolist()
-
-    print(sorted_words)
 
     return jsonify({'path': path_im, 'words': sorted_words})
 
