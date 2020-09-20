@@ -34,7 +34,7 @@
 
     <!-- Import Bootstrap bundle -->
     <script>
-        var API_path = "{{ config['API_PATH'] }}"; // TO MODIFY
+        var API_path = "{{ config['SECRET_KEY']| tojson }}"; // TO MODIFY
         console.log(API_path);
 
         async function getData(path) {

@@ -25,8 +25,17 @@ app = Flask(__name__)
 
 CORS(app, supports_credentials=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app where the database is located
-# Tell our app where the database is located
-app.config['SECRET_KEY'] = 'secret-key-goes-here'
+app.config["SECRET_KEY"] = "_zb_&fMay8K,fg"
+
+# ENVIRONMENT :
+app.config["ENV"] = "development"
+
+if app.config["ENV"] == "development":
+    app.config["API_PATH"] = "https://retry-unige.herokuapp.com/"
+    app.config["DEBUG"] = True
+elif app.config["ENV"] == "production":
+    app.config["API_PATH"] = "http://172.23.32.225/"
+    app.config["DEBUG"] = False
 
 # initialise the db, with the setting of our app
 db = SQLAlchemy(app)
@@ -75,6 +84,15 @@ class User(UserMixin, db.Model):
 def fillDB():
     path = "./words_albanian.txt"
     path_transl = "./transl_alb.txt"
+
+    db.create_all()
+
+    new_user = User(email="shnik@unige.ch",
+                    name="Shnik_admin",
+                    password=generate_password_hash("p_shnik", method='sha256'))
+
+    db.session.add(new_user)
+    db.session.commit()
 
     try:
         file1 = open(path, 'r', encoding='utf-8')
@@ -134,9 +152,11 @@ def checkip():
 def home():
     # if checkip() != 'OK':
     #     return make_response(jsonify({"message": checkip()}), 200)
-    # ans = fillDB()
-    # if ans != 0:
-    #     return ans
+    ans = fillDB()
+    if ans != 0:
+        return ans
+
+    print(app.config['API_path'])
 
     return render_template('welcome.html')
 
@@ -163,34 +183,37 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/signup')
-def signup():
-    return render_template('signup.html')
+# @app.route('/signup')
+# def signup():
+#     return render_template('signup.html')
 
 
-@app.route('/signup', methods=['POST'])
-def signup_post():
-    email = request.form.get('email')
-    name = request.form.get('name')
-    password = request.form.get('password')
+# @app.route('/signup', methods=['POST'])
+# def signup_post():
+#     email = request.form.get('email')
+#     name = request.form.get('name')
+#     password = request.form.get('password')
 
-    # if this returns a user, then the email already exists in database
-    user = User.query.filter_by(email=email).first()
+#     if not os.path.isfile('./leksik.db'):
+#         fillDB()
 
-    if user:  # if a user is found, we want to redirect back to signup page so user can try again
-        flash('Email address already exists')
-        return redirect(url_for('auth.signup'))
+#     # if this returns a user, then the email already exists in database
+#     user = User.query.filter_by(email=email).first()
 
-    # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-    new_user = User(email=email,
-                    name=name,
-                    password=generate_password_hash(password, method='sha256'))
+#     if user:  # if a user is found, we want to redirect back to signup page so user can try again
+#         flash('Email address already exists')
+#         return redirect(url_for('auth.signup'))
 
-    # add the new user to the database
-    db.session.add(new_user)
-    db.session.commit()
+#     # create a new user with the form data. Hash the password so the plaintext version isn't saved.
+#     new_user = User(email=email,
+#                     name=name,
+#                     password=generate_password_hash(password, method='sha256'))
 
-    return redirect(url_for('login'))
+#     # add the new user to the database
+#     db.session.add(new_user)
+#     db.session.commit()
+
+#     return redirect(url_for('login'))
 
 
 @app.route('/logout')
@@ -205,6 +228,9 @@ def login_post():
     email = request.form.get('email')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
+
+    if not os.path.isfile('./leksik.db'):
+        fillDB()
 
     user = User.query.filter_by(email=email).first()
 
@@ -228,8 +254,7 @@ def stats():
 
 @app.route('/download')
 def post():
-    response = requests.get("https://retry-unige.herokuapp.com/alldata")
-    # TO MODIFY
+    response = requests.get(app.config['API_PATH'] + "alldata")
     data = json.loads(response.text)
     csv_array = [
         ["IMAGE", "NANSWERS", "VARIANCES"],
@@ -306,6 +331,8 @@ def create_entry():
     # Add new words
     if (new_words != []):
         for new_word in new_words:
+            if (len(new_word) == 0):
+                continue
             [email, id, fullname] = user_info.split(',')
             newVar = Variante(name=new_word.lower(), count='1',
                               lName=image_query, user_info=email+','+id+','+fullname)
@@ -405,4 +432,4 @@ def data():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
