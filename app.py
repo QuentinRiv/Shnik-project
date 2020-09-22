@@ -340,7 +340,7 @@ def create_entry():
 
     # Add new words
     if (new_words != []):
-        for new_word in new_words:
+        for new_word in set(new_words):
             if (len(new_word) == 0):
                 continue
             [email, id, fullname] = user_info.split(',')
