@@ -41,7 +41,8 @@ if app.config["ENV"] == "development":
     app.config["HOST"] = '127.0.0.1'
 
 elif app.config["ENV"] == "production":
-    app.config["API_PATH"] = "http://172.23.32.225/"
+    # app.config["API_PATH"] = "http://172.23.32.225/"
+    app.config["API_PATH"] = "http://130.60.24.137/"
     app.config["DEBUG"] = False
     app.config["PORT"] = 80
     app.config["HOST"] = '0.0.0.0'
@@ -149,7 +150,7 @@ def checkip():
         else:
             ip_list = request.remote_addr  # For local development
 
-        if ip_list not in ['127.0.0.1', '176.153.30.138']:
+        if ip_list not in ['127.0.0.1', '176.153.30.138', '130.60.24.55']:
             return 'No Access Granted : Website is None and not good ip_list (' + ip_list + ')'
 
     elif website_ip != "http://130.60.24.55:5000":
@@ -173,6 +174,8 @@ def home():
 
 @app.route('/')
 def index():
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
     return render_template('index.html')
 
 
@@ -294,6 +297,9 @@ def post():
 
 @app.route('/image/<string:name>', methods=['POST', 'GET'])
 def image(name):
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
+
     # Get the corresponding image
     image_query = Image.query.filter_by(name=name).first()
 
@@ -385,6 +391,9 @@ def create_entry():
 @app.route("/delete", methods=["POST"])
 def delete_entry():
 
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
+
     # Get the JSON data
     req = request.get_json(force=True)
 
@@ -415,6 +424,8 @@ def delete_entry():
 
 @app.route('/alldata')
 def data():
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
     # Get the corresponding image
     dico = {}
     all_ims = Image.query.all()
