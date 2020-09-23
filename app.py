@@ -29,15 +29,24 @@ app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app
 app.config["SECRET_KEY"] = "_zb_&fMay8K,fg"
 
 # ENVIRONMENT :
-# app.config["ENV"] = "development"
+modes = ['development', 'production']
+app.config["ENV"] = sys.argv[1]
+if app.config["ENV"] not in modes:
+    exit("Usage: python app.py "+str(modes))
 
-# if app.config["ENV"] == "development":
-#     app.config["API_PATH"] = "https://retry-unige.herokuapp.com/"
-#     app.config["DEBUG"] = True
-    
-# elif app.config["ENV"] == "production":
-#     app.config["API_PATH"] = "http://172.23.32.225/"
-#     app.config["DEBUG"] = False
+if app.config["ENV"] == "development":
+    app.config["API_PATH"] = "https://retry-unige.herokuapp.com/"
+    app.config["DEBUG"] = True
+    app.config["PORT"] = 5000
+    app.config["HOST"] = '127.0.0.1'
+
+elif app.config["ENV"] == "production":
+    # app.config["API_PATH"] = "http://172.23.32.225/"
+    app.config["API_PATH"] = "http://130.60.24.137/"
+    app.config["DEBUG"] = False
+    app.config["PORT"] = 80
+    app.config["HOST"] = '0.0.0.0'
+
 
 # initialise the db, with the setting of our app
 db = SQLAlchemy(app)
@@ -141,7 +150,7 @@ def checkip():
         else:
             ip_list = request.remote_addr  # For local development
 
-        if ip_list not in ['127.0.0.1', '176.153.30.138']:
+        if ip_list not in ['127.0.0.1', '176.153.30.138', '130.60.24.55']:
             return 'No Access Granted : Website is None and not good ip_list (' + ip_list + ')'
 
     elif website_ip != "http://130.60.24.55:5000":
@@ -163,6 +172,8 @@ def home():
 
 @app.route('/')
 def index():
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
     return render_template('index.html')
 
 
@@ -310,6 +321,9 @@ def post():
 
 @app.route('/image/<string:name>', methods=['POST', 'GET'])
 def image(name):
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
+
     # Get the corresponding image
     image_query = Image.query.filter_by(name=name).first()
 
@@ -356,7 +370,7 @@ def create_entry():
 
     # Add new words
     if (new_words != []):
-        for new_word in new_words:
+        for new_word in set(new_words):
             if (len(new_word) == 0):
                 continue
             [email, id, fullname] = user_info.split(',')
@@ -400,7 +414,14 @@ def create_entry():
 # Route to delete a word in a database, given the index of an image
 @app.route("/delete", methods=["POST"])
 def delete_entry():
+<<<<<<< HEAD
     print('Requete :')
+=======
+
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
+
+>>>>>>> 9342a43761ada34b90c31cb7d6d06c3bc7b1cf75
     # Get the JSON data
     req = request.get_json(force=True)
 
@@ -428,6 +449,8 @@ def delete_entry():
 
 @app.route('/alldata')
 def data():
+    if checkip() != 'OK':
+        return make_response(jsonify({"message": checkip()}), 200)
     # Get the corresponding image
     dico = getAllData()
 
@@ -435,4 +458,4 @@ def data():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host=app.config["HOST"], port=app.config["PORT"])
