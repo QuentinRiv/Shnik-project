@@ -36,7 +36,7 @@
     <script>
 
 
-        async function prepareWords(path) {
+        async function prepareWords() {
 
             var data = JSON.parse('{{dico | tojson}}')
             var allNames = data['names'];
@@ -56,9 +56,7 @@
             for (var name of allNames) {
                 full_tab += `<tr>`;
                 var path_i = "/static/dictionary/" + name +".jpg";
-                // var path_i = "https://drive.switch.ch/index.php/apps/files/?dir=/dictionary2&fileid=2626002808#/files_mediaviewer/" + name +".jpg";
                 full_tab += `<td style="width: 150px;"><img id="${name}" class="${name}" src=${path_i} alt /></td>`;
-                // full_tab += `<td><img id="ima" class="wo_ima" src="/static/people_photo/chat.jpg" alt /></td>`;
 
                 full_tab += `<td><p class="texte">${name}</p></td>`;
                 full_tab += `<td><p class="texte">${data[name]['nb_ans']}</p></td>`;
@@ -135,7 +133,7 @@
         var name_button = "";
         var name_var = [];
 
-        prepareWords(path);
+        prepareWords();
 
         async function delete_message(path_del, word) {
 
