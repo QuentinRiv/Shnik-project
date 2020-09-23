@@ -34,28 +34,11 @@
 
     <!-- Import Bootstrap bundle -->
     <script>
-        var API_path = "{{ config['API_PATH'] }}"; // TO MODIFY
-        console.log(API_path);
-
-        async function getData(path) {
-                let response = await fetch(path, {
-                    method: "GET",
-                    credentials: "include",
-                    cache: "no-cache",
-                    headers: new Headers({
-                        "content-type": "application/json",
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Credentials': true
-                    })
-                })
-                let data = await response.json();
-                return data;
-            }
 
 
         async function prepareWords(path) {
 
-            var data = await getData(path);
+            var data = JSON.parse('{{dico | tojson}}')
             var allNames = data['names'];
             var full_tab = ``;
             var total = 0;
@@ -109,7 +92,35 @@
             $("button").on("click", function () {
                 name_button = this.id;
                 name_var.push(this.value);
-                delete_word(API_path + `delete`, this.id);
+
+                var selectedWords = [];
+
+                var entry = {
+                    name: name_button,
+                    selwords: name_var,
+                };
+                fetch('/delete', {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify(entry),
+                    cache: "no-cache",
+                    headers: new Headers({
+                        "content-type": "application/json"
+                    })
+                })
+                    .then(function (response) {
+                        console.log('Response:', response)
+                        if (response.status !== 200) {
+                            console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                            return;
+                        }
+                        response.json().then(function (data) {
+                            console.log(data);
+                        });
+                    })
+                    .catch(function (error) {
+                        console.log("Fetch error: " + error);
+                    });
             });
 
             flaggedWords = [];
@@ -123,7 +134,7 @@
 
         var name_button = "";
         var name_var = [];
-        path = API_path + `alldata`;
+
         prepareWords(path);
 
         async function delete_message(path_del, word) {

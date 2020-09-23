@@ -17,6 +17,7 @@ import requests
 import json
 import io
 import csv
+import simplejson
 
 
 
@@ -28,14 +29,15 @@ app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app
 app.config["SECRET_KEY"] = "_zb_&fMay8K,fg"
 
 # ENVIRONMENT :
-app.config["ENV"] = "development"
+# app.config["ENV"] = "development"
 
-if app.config["ENV"] == "development":
-    app.config["API_PATH"] = "https://retry-unige.herokuapp.com/"
-    app.config["DEBUG"] = True
-elif app.config["ENV"] == "production":
-    app.config["API_PATH"] = "http://172.23.32.225/"
-    app.config["DEBUG"] = False
+# if app.config["ENV"] == "development":
+#     app.config["API_PATH"] = "https://retry-unige.herokuapp.com/"
+#     app.config["DEBUG"] = True
+    
+# elif app.config["ENV"] == "production":
+#     app.config["API_PATH"] = "http://172.23.32.225/"
+#     app.config["DEBUG"] = False
 
 # initialise the db, with the setting of our app
 db = SQLAlchemy(app)
@@ -156,8 +158,6 @@ def home():
     if ans != 0:
         return ans
 
-    print(app.config['API_path'])
-
     return render_template('welcome.html')
 
 
@@ -244,18 +244,44 @@ def login_post():
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
     return redirect(url_for('stats'))
-
+ 
+def getAllData():
+    dico = {}
+    all_ims = Image.query.all()
+    dico['names'] = []
+    for image in all_ims:
+        vars = image.info
+        names = np.array([var.name for var in vars])
+        scores = np.array([var.count for var in vars])
+        flags = np.array([var.flag for var in vars])
+        user_info = np.array([var.user_info for var in vars])
+        order = scores.argsort()[::-1]
+        names_ordered = names[order].tolist()
+        scores_ordered = np.sort(scores).tolist()[::-1]
+        flags_ordered = flags[order].tolist()
+        u_info_ordered = user_info[order].tolist()
+        nb_ans = image.nb_ans
+        dico[image.name] = {'variance': names_ordered,
+                            'scores': scores_ordered,
+                            'flag': flags_ordered,
+                            'nb_ans': nb_ans,
+                            'user_info': u_info_ordered}
+        dico['names'] += [image.name]
+    return dico
 
 @app.route('/stats')
 @login_required
 def stats():
-    return render_template('stats.html')
+    # Get the corresponding image
+    
+    dico = getAllData()
+    return render_template('stats.html', dico=dico)
 
 
 @app.route('/download')
 def post():
-    response = requests.get(app.config['API_PATH'] + "alldata")
-    data = json.loads(response.text)
+
+    data = getAllData()
     csv_array = [
         ["IMAGE", "NANSWERS", "VARIANCES"],
     ]
@@ -374,9 +400,11 @@ def create_entry():
 # Route to delete a word in a database, given the index of an image
 @app.route("/delete", methods=["POST"])
 def delete_entry():
-
+    print('Requete :')
     # Get the JSON data
     req = request.get_json(force=True)
+
+    print(req)
 
     # Get the info for adding the new word(s)
     name = req['name']
@@ -398,35 +426,10 @@ def delete_entry():
     return make_response(jsonify({"message": "OK : Word(s) deleted"}), 200)
 
 
-# @app.route('/stats')
-# def stats():
-#     return render_template('stats.html')
-
-
 @app.route('/alldata')
 def data():
     # Get the corresponding image
-    dico = {}
-    all_ims = Image.query.all()
-    dico['names'] = []
-    for image in all_ims:
-        vars = image.info
-        names = np.array([var.name for var in vars])
-        scores = np.array([var.count for var in vars])
-        flags = np.array([var.flag for var in vars])
-        user_info = np.array([var.user_info for var in vars])
-        order = scores.argsort()[::-1]
-        names_ordered = names[order].tolist()
-        scores_ordered = np.sort(scores).tolist()[::-1]
-        flags_ordered = flags[order].tolist()
-        u_info_ordered = user_info[order].tolist()
-        nb_ans = image.nb_ans
-        dico[image.name] = {'variance': names_ordered,
-                            'scores': scores_ordered,
-                            'flag': flags_ordered,
-                            'nb_ans': nb_ans,
-                            'user_info' : u_info_ordered}
-        dico['names'] += [image.name]
+    dico = getAllData()
 
     return jsonify(dico)
 
