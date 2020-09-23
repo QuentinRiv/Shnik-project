@@ -28,24 +28,24 @@ CORS(app, supports_credentials=True)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///leksik.db'     # Tell our app where the database is located
 app.config["SECRET_KEY"] = "_zb_&fMay8K,fg"
 
-# ENVIRONMENT :
-modes = ['development', 'production']
-app.config["ENV"] = sys.argv[1]
-if app.config["ENV"] not in modes:
-    exit("Usage: python app.py "+str(modes))
+# # ENVIRONMENT :
+# modes = ['development', 'production']
+# app.config["ENV"] = sys.argv[1]
+# if app.config["ENV"] not in modes:
+#     exit("Usage: python app.py "+str(modes))
 
-if app.config["ENV"] == "development":
-    app.config["API_PATH"] = "https://retry-unige.herokuapp.com/"
-    app.config["DEBUG"] = True
-    app.config["PORT"] = 5000
-    app.config["HOST"] = '127.0.0.1'
+# if app.config["ENV"] == "development":
+#     app.config["API_PATH"] = "https://retry-unige.herokuapp.com/"
+#     app.config["DEBUG"] = True
+#     app.config["PORT"] = 5000
+#     app.config["HOST"] = '127.0.0.1'
 
-elif app.config["ENV"] == "production":
-    # app.config["API_PATH"] = "http://172.23.32.225/"
-    app.config["API_PATH"] = "http://130.60.24.137/"
-    app.config["DEBUG"] = False
-    app.config["PORT"] = 80
-    app.config["HOST"] = '0.0.0.0'
+# elif app.config["ENV"] == "production":
+#     # app.config["API_PATH"] = "http://172.23.32.225/"
+#     app.config["API_PATH"] = "http://130.60.24.137/"
+#     app.config["DEBUG"] = False
+#     app.config["PORT"] = 80
+#     app.config["HOST"] = '0.0.0.0'
 
 
 # initialise the db, with the setting of our app
@@ -414,14 +414,10 @@ def create_entry():
 # Route to delete a word in a database, given the index of an image
 @app.route("/delete", methods=["POST"])
 def delete_entry():
-<<<<<<< HEAD
-    print('Requete :')
-=======
 
     if checkip() != 'OK':
         return make_response(jsonify({"message": checkip()}), 200)
 
->>>>>>> 9342a43761ada34b90c31cb7d6d06c3bc7b1cf75
     # Get the JSON data
     req = request.get_json(force=True)
 
