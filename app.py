@@ -17,7 +17,6 @@ import requests
 import json
 import io
 import csv
-import simplejson
 import sys
 
 
